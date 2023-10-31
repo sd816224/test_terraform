@@ -21,19 +21,14 @@ resource "aws_iam_policy" "cloudwatch_logs_policy_for_ingestion_lambda" {
     Version = "2012-10-17",
     Statement = [
       {
-        Action   = "logs:CreateLogGroup",
-        Effect   = "Allow",
-        Resource = "*"
+        actions   = "logs:CreateLogGroup",
+        effect   = "Allow",
+        resources = "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"
       },
       {
-        Action   = "logs:CreateLogStream",
-        Effect   = "Allow",
-        Resource = "*"
-      },
-      {
-        Action   = "logs:PutLogEvents",
-        Effect   = "Allow",
-        Resource = "*"
+        actions   = ["logs:CreateLogStream","logs:PutLogEvents"]
+        effect   = "Allow",
+        resources = "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.ingestion_lambda}:*"
       }
     ]
   })
@@ -46,14 +41,14 @@ resource "aws_iam_policy" "ingestion_lambda_s3_policy" {
     Version = "2012-10-17",
     Statement = [
       {
-        Action = "s3:GetObject",
-        Effect = "Allow",
-        Resource = "${aws_s3_bucket.lambda_code_bucket.arn}/*" # ??
+        actions = "s3:GetObject",
+        effect = "Allow",
+        resources = "${aws_s3_bucket.lambda_code_bucket.arn}/*" # ??
       },
       {
-        Action = "s3:PutObject",
-        Effect = "Allow",
-        Resource = "${aws_s3_bucket.ingestion_data_bucket.arn}/*",
+        actions = "s3:PutObject",
+        effect = "Allow",
+        resources = "${aws_s3_bucket.ingestion_data_bucket.arn}/*",
       },
     ]
   })
