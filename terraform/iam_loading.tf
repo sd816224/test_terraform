@@ -41,7 +41,12 @@ resource "aws_iam_policy" "warehouse_loading_lambda_s3_policy" {
       },
       # {
       #   ##### Possible permission to access the warehouse db on aws.
-      # },
+      # }
     ]
   })
+}
+
+resource "aws_iam_role_policy_attachment" "warehouse_loading_lambda_s3_policy_attachment" {
+  role       = aws_iam_role.role_for_warehouse_loading_lambda.name
+  policy_arn = aws_iam_policy.warehouse_loading_lambda_s3_policy.arn
 }
