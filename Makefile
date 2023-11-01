@@ -56,7 +56,7 @@ run-flake:
 	$(call execute_in_env, flake8  ./src/*/*.py ./test/*/*.py)
 
 ## Run the unit tests
-unit-test:git 
+unit-test:
 	$(call execute_in_env, PYTHONPATH=${PYTHONPATH} pytest -v)
 
 ## Run the coverage check

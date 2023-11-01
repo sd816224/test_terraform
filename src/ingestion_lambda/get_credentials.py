@@ -1,9 +1,12 @@
 from botocore.exceptions import ClientError
 import boto3
 import json
+import logging
+logger = logging.getLogger()
+logger.setLevel(logging.ERROR)
 
 
-def get_credendials(secret_name):
+def get_credentials(secret_name):
     """
     Gets credentials from the AWS secrets manager.
 
@@ -51,8 +54,8 @@ def get_credendials(secret_name):
 
     except ClientError as e:
         if e.response["Error"]["Code"] == "ResourceNotFoundException":
-            raise ClientError(f"Secret {secret_name} does not exist.")
+            logger.error(f"Secret {secret_name} does not exist.")
         else:
-            raise ClientError(f"Error accessing database secret {secret_name}: {e}")
+            logger.error(f"Error accessing database secret {secret_name}: {e}")
     except KeyError as e:
-        raise KeyError(f"Missing key {e} in database credentials.")
+        logger.error(f"Missing key {e} in database credentials.")
