@@ -2,7 +2,7 @@ resource "aws_lambda_function" "ingestion_lambda" {
   function_name    = var.ingestion_lambda
   # handler          = "reader.lambda_handler" 
   runtime          = "python3.11"
-  role             = aws_iam_role.role_for_lambda.arn
+  role             = aws_iam_role.role_for_ingestion_lambda.arn
   s3_bucket        = aws_s3_bucket.lambda_code_bucket.id
   # s3_key           = "function.zip"
   # layers        = []
