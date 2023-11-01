@@ -28,23 +28,25 @@ resource "aws_iam_role_policy_attachment" "loading_cw_policy_attachment" {
   role = aws_iam_role.role_for_warehouse_loading_lambda.name
 }
 
-# resource "aws_iam_policy" "warehouse_loading_lambda_s3_policy" {
-#   name        = "warehouse_loading_lambda_s3_policy"
-#   description = "Allows reading from tranformed data bucket and writing to ingestion data bucket"
-#   policy = jsonencode({
-#     Version = "2012-10-17",
-#     Statement = [
-#       {
-#         actions = "s3:GetObject",
-#         effect = "Allow",
-#         resources = "${aws_s3_bucket.transformed_data_bucket.arn}/*" # ??
-#       },
-#       {
-#         ######################## ToDo: this needs to be permission to write to warehouse db
-#         actions = "s3:PutObject",
-#         effect = "Allow",
-#         resources = "${aws_s3_bucket.ingestion_data_bucket.arn}/*",
-#       },
-#     ]
-#   })
-# }
+resource "aws_iam_policy" "warehouse_loading_lambda_s3_policy" {
+  name        = "warehouse_loading_lambda_s3_policy"
+  description = "Allows reading from tranformed data bucket."
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        actions = "s3:GetObject",
+        effect = "Allow",
+        resources = "${aws_s3_bucket.transformed_data_bucket.arn}/*" 
+      },
+      # {
+      #   ##### Possible permission to access the warehouse db on aws.
+      # }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "warehouse_loading_lambda_s3_policy_attachment" {
+  role       = aws_iam_role.role_for_warehouse_loading_lambda.name
+  policy_arn = aws_iam_policy.warehouse_loading_lambda_s3_policy.arn
+}
