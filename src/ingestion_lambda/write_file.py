@@ -2,7 +2,6 @@ import boto3
 import logging
 from datetime import datetime as dt
 from botocore.exceptions import ClientError
-import json
 
 logging.basicConfig()
 logger = logging.getLogger("ingestion_lambda")
@@ -39,7 +38,11 @@ def write_file(bucket_name, json_data, timestamp=dt(2020, 1, 1, 0, 0, 0)):
         if json_data is None:
             raise Exception("No JSON data provided")
 
-        response = client.put_object(Body=json_data, Bucket=bucket_name, Key=file_name)
+        response = client.put_object(
+            Body=json_data,
+            Bucket=bucket_name,
+            Key=file_name
+            )
         if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
             logger.info(f"Success. File {file_name} saved.")
 

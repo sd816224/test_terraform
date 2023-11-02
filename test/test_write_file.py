@@ -6,7 +6,6 @@ import pytest
 import os
 import time_machine
 import logging
-from pprint import pprint
 
 logger = logging.getLogger("MyLogger")
 logger.setLevel(logging.INFO)
