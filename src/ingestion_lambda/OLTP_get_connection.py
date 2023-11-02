@@ -32,12 +32,12 @@ def get_connection(database_credentials):
     A successful pg8000 connection object will be returned.
     '''
     try:
-        user=database_credentials['user']
-        host=database_credentials['host']
-        database=database_credentials['database']
-        port=database_credentials['port']
-        password=database_credentials['password']
-        conn= Connection(user, host, database, port, password, timeout=1)
+        user = database_credentials['user']
+        host = database_credentials['host']
+        database = database_credentials['database']
+        port = database_credentials['port']
+        password = database_credentials['password']
+        conn = Connection(user, host, database, port, password, timeout=5)
         logger.info('Connection to database Totesys has been established.')
         return conn
     except DatabaseError as db:
@@ -47,6 +47,6 @@ def get_connection(database_credentials):
         logger.error(f'pg8000 - an error has occured: \n"{ie}"')
         raise ie
     except Exception as exc:
-        logger.error('An error has occured when attempting to connect to the database.')
+        logger.error(
+            'An error has occured when attempting to connect to the database.')
         raise exc
-

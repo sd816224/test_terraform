@@ -2,7 +2,7 @@ import os
 import logging
 import pytest
 from dotenv import load_dotenv
-from pg8000 import DatabaseError, InterfaceError #Connection, 
+from pg8000 import DatabaseError, InterfaceError  # Connection,
 from src.ingestion_lambda.OLTP_get_connection import get_connection
 
 
@@ -19,15 +19,15 @@ def test_get_connection_returns_correct_log_when_successful_connection(caplog):
     '''
     with caplog.at_level(logging.INFO):
         load_dotenv()
-        database_credentials ={
-            'user':os.environ['PGUSER'],
-            'host':os.environ['PGHOST'],
-            'port':os.environ['PGPORT'],
-            'database':os.environ['DB'],
-            'password':os.environ['PGPASSWORD'],
+        database_credentials = {
+            'user': os.environ['PGUSER'],
+            'host': os.environ['PGHOST'],
+            'port': os.environ['PGPORT'],
+            'database': os.environ['DB'],
+            'password': os.environ['PGPASSWORD'],
         }
         get_connection(database_credentials)
-        assert('Connection to database Totesys has been established.' in caplog.text)
+        assert ('Connection to database Totesys has been established.' in caplog.text)
 
 
 def test_get_connection_with_interface_error_no_user():
@@ -37,12 +37,12 @@ def test_get_connection_with_interface_error_no_user():
     '''
     with pytest.raises(InterfaceError):
         load_dotenv()
-        database_credentials ={
-            'user':'',
-            'host':os.environ['PGHOST'],
-            'port':os.environ['PGPORT'],
-            'database':os.environ['DB'],
-            'password':os.environ['PGPASSWORD'],
+        database_credentials = {
+            'user': '',
+            'host': os.environ['PGHOST'],
+            'port': os.environ['PGPORT'],
+            'database': os.environ['DB'],
+            'password': os.environ['PGPASSWORD'],
         }
         get_connection(database_credentials)
 
@@ -54,14 +54,15 @@ def test_get_connection_with_interface_error_no_host():
     '''
     with pytest.raises(InterfaceError):
         load_dotenv()
-        database_credentials ={
-            'user':os.environ['PGUSER'],
-            'host':'',
-            'port':os.environ['PGPORT'],
-            'database':os.environ['DB'],
-            'password':os.environ['PGPASSWORD'],
+        database_credentials = {
+            'user': os.environ['PGUSER'],
+            'host': '',
+            'port': os.environ['PGPORT'],
+            'database': os.environ['DB'],
+            'password': os.environ['PGPASSWORD'],
         }
         get_connection(database_credentials)
+
 
 def test_for_interface_error_when_provided_incorrect_port():
     '''
@@ -70,12 +71,12 @@ def test_for_interface_error_when_provided_incorrect_port():
     '''
     with pytest.raises(InterfaceError):
         load_dotenv()
-        database_credentials ={
-            'user':os.environ['PGUSER'],
-            'host':os.environ['PGHOST'],
-            'port':1,
-            'database':os.environ['DB'],
-            'password':os.environ['PGPASSWORD'],
+        database_credentials = {
+            'user': os.environ['PGUSER'],
+            'host': os.environ['PGHOST'],
+            'port': 1,
+            'database': os.environ['DB'],
+            'password': os.environ['PGPASSWORD'],
         }
         get_connection(database_credentials)
 
@@ -87,12 +88,12 @@ def test_for_interface_error_when_provided_no_port():
     '''
     with pytest.raises(InterfaceError):
         load_dotenv()
-        database_credentials ={
-            'user':os.environ['PGUSER'],
-            'host':os.environ['PGHOST'],
-            'port':'',
-            'database':os.environ['DB'],
-            'password':os.environ['PGPASSWORD'],
+        database_credentials = {
+            'user': os.environ['PGUSER'],
+            'host': os.environ['PGHOST'],
+            'port': '',
+            'database': os.environ['DB'],
+            'password': os.environ['PGPASSWORD'],
         }
         get_connection(database_credentials)
 
@@ -103,12 +104,12 @@ def test_get_connection_with_database_error_incorrect_database_name():
     '''
     with pytest.raises(DatabaseError):
         load_dotenv()
-        database_credentials ={
-            'user':os.environ['PGUSER'],
-            'host':os.environ['PGHOST'],
-            'port':os.environ['PGPORT'],
-            'database':'wrong database name',
-            'password':os.environ['PGPASSWORD'],
+        database_credentials = {
+            'user': os.environ['PGUSER'],
+            'host': os.environ['PGHOST'],
+            'port': os.environ['PGPORT'],
+            'database': 'wrong database name',
+            'password': os.environ['PGPASSWORD'],
         }
         get_connection(database_credentials)
 
@@ -119,12 +120,12 @@ def test_get_connection_with_database_error_incorrect_password():
     '''
     with pytest.raises(DatabaseError):
         load_dotenv()
-        database_credentials ={
-            'user':os.environ['PGUSER'],
-            'host':os.environ['PGHOST'],
-            'port':os.environ['PGPORT'],
-            'database':os.environ['DB'],
-            'password':'',
+        database_credentials = {
+            'user': os.environ['PGUSER'],
+            'host': os.environ['PGHOST'],
+            'port': os.environ['PGPORT'],
+            'database': os.environ['DB'],
+            'password': '',
         }
         get_connection(database_credentials)
 
@@ -135,11 +136,11 @@ def test_get_connection_with_unexpected_error():
     '''
     with pytest.raises(Exception):
         load_dotenv()
-        database_credentials ={
-            'user':os.environ['PGUSER'],
-            'host':os.environ['PGHOST'],
-            'port':os.environ['PGPORT'],
-            'database':os.environ['DB'],
+        database_credentials = {
+            'user': os.environ['PGUSER'],
+            'host': os.environ['PGHOST'],
+            'port': os.environ['PGPORT'],
+            'database': os.environ['DB'],
         }
         get_connection(database_credentials)
 
@@ -150,11 +151,11 @@ def test_get_connection_with_key_error():
     '''
     with pytest.raises(Exception):
         load_dotenv()
-        database_credentials ={
-            'user':os.environ['PGUSER'],
-            'host':os.environ['PGHOST'],
-            'port':os.environ['PGPORT'],
-            'database':os.environ['DB'],
-            'incorrect_key':os.environ['PASSWORD'],
+        database_credentials = {
+            'user': os.environ['PGUSER'],
+            'host': os.environ['PGHOST'],
+            'port': os.environ['PGPORT'],
+            'database': os.environ['DB'],
+            'incorrect_key': os.environ['PASSWORD'],
         }
         get_connection(database_credentials)
