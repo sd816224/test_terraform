@@ -1,6 +1,4 @@
 import boto3
-from datetime import date
-from datetime import timedelta
 from datetime import datetime as dt
 from botocore.exceptions import ClientError
 import logging
@@ -30,10 +28,11 @@ def get_last_upload(bucket_name):
 
         return datetime_object
     except ClientError as e:
-        if e.response["Error"]["Message"] == "The specified key does not exist.":
-            datetime_object = dt.strptime("2020:1:1:00:00:00", "%Y:%m:%d:%H:%M:%S")
+        message = e.response["Error"]["Message"]
+        if message == "The specified key does not exist.":
+            dt_object = dt.strptime("2020:1:1:00:00:00", "%Y:%m:%d:%H:%M:%S")
             logger.info("default datetime object returned")
-            return datetime_object
+            return dt_object
         else:
             logger.error(e.response["Error"]["Message"])
     except Exception as e:
