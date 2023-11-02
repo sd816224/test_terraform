@@ -15,9 +15,5 @@ terraform {
 
 provider "aws" {
   region  = "eu-west-2"
+  profile = "nc-admin"
 }
-
-
-# could specify key = "production/terraform.tfstate" 
-# if we wanted to use the same bucket for test/ state
-# probably don't need this. 
