@@ -1,11 +1,8 @@
-import os
-from dotenv import load_dotenv
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 import json
 import pytest
 import logging
 from src.ingestion_lambda.get_data import get_data
-from src.ingestion_lambda.OLTP_get_connection import get_connection
 
 
 logger = logging.getLogger('MyLogger')
@@ -16,34 +13,34 @@ def mock_run(str, date='ss'):
     '''
     Mock table data
     '''
-    if "SELECT table_name FROM information_schema.tables WHERE table_schema =" in str:
+    if "SELECT table_name" in str:
         return [['table_a'], ['table_b'], ['_prisma_migrations']]
     elif "SELECT * FROM table_a" in str:
         return [[1, 2, 3], [11, 22, 33]]
     elif "SELECT * FROM table_b" in str:
         return [[10, 20, 30], [110, 220, 330]]
-    elif "SELECT column_name from information_schema.columns" in str:
+    elif "SELECT column_name" in str:
         return [['c1'], ['c2'], ['c3']]
 
 
-def mock_run_with_date(str, date='ss'):
+def mock_run_with_incorrect_columns(str, date='ss'):
     '''
     Mock table data
     '''
-    if "SELECT table_name FROM information_schema.tables WHERE table_schema =" in str:
+    if "SELECT table_name FROM information_schema.tables " in str:
         return [['table_a'], ['table_b'], ['_prisma_migrations']]
     elif "SELECT * FROM table_a" in str:
         return [[1, 2, 3], [11, 22, 33]]
     elif "SELECT * FROM table_b" in str:
         return [[10, 20, 30], [110, 220, 330]]
-    elif "SELECT column_name from information_schema.columns" in str:
+    elif "SELECT column_name FROM information_schema.columns" in str:
         return [['c1'], ['c2']]
 
 
 def test_get_data_get_all_table_names_with_multiple_table_and_column_names():
     '''
-    This test uses the mock data as the connection, and tests the correct response
-    when passed a set of test database tables, column names, and data.
+    This test uses the mock data as the connection, and tests the correct
+    response when passed a set of test database tables, column names, and data.
     '''
     expected_updated_content = {
         "table_a": [
@@ -93,10 +90,10 @@ def test_get_data_returns_correct_log_when_successful_connection(caplog):
 
 def test_get_data_will_return_error_message_in_logs():
     '''
-    This test uses the mock data as the connection, and tests the correct response
-    when passed a set of test database tables, column names, and data.
+    This test uses the mock data as the connection, and tests the correct
+    response when passed a set of test database tables, column names, and data.
     '''
     with pytest.raises(Exception):
         conn_mock = Mock()
-        conn_mock.run.side_effect = mock_run_with_date
+        conn_mock.run.side_effect = mock_run_with_incorrect_columns
         get_data(conn_mock)
