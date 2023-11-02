@@ -2,7 +2,7 @@ import os
 import logging
 import pytest
 from dotenv import load_dotenv
-from pg8000.native import Connection, InterfaceError, DatabaseError
+# from pg8000.native import Connection, InterfaceError, DatabaseError
 from src.ingestion_lambda.OLTP_get_connection import get_connection
 
 

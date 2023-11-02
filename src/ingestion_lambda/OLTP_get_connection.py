@@ -1,7 +1,7 @@
-import os
-from pg8000.native import Connection, InterfaceError, DatabaseError, Error
-from dotenv import load_dotenv
+# import os
 import logging
+from pg8000.native import Connection, InterfaceError, DatabaseError, Error
+# from dotenv import load_dotenv
 
 
 logger = logging.getLogger('MyLogger')
