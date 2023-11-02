@@ -65,4 +65,24 @@ resource "aws_iam_role_policy_attachment" "ingestion_lambda_s3_policy_attachment
 }
 
 
-# separate dirs for each lambda logs? Log groups?
+
+resource "aws_iam_policy" "lambda_access_secrets_manager_policy" {
+  name        = "ingestion_lambda_secrets_manager_policy"
+  description = "Policy that grants access to Secrets Manager for lambda"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action   = "secretsmanager:GetSecretValue",
+        Effect   = "Allow",
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ingestion_lambda_secrets_manager_attachment" {
+  policy_arn = aws_iam_policy.lambda_access_secrets_manager_policy.arn
+  role       = aws_iam_role.role_for_ingestion_lambda.name
+}
