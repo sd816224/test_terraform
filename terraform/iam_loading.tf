@@ -54,5 +54,5 @@ resource "aws_iam_role_policy_attachment" "warehouse_loading_lambda_s3_policy_at
 
 resource "aws_iam_role_policy_attachment" "loading_lambda_secrets_manager_attachment" {
   policy_arn = aws_iam_policy.lambda_access_secrets_manager_policy.arn
-  role       = aws_iam_role.ole_for_warehouse_loading_lambda.name
+  role       = aws_iam_role.role_for_warehouse_loading_lambda.name
 }

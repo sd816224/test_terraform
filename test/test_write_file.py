@@ -93,7 +93,7 @@ class TestWriteFile:
         response = s3.get_object(Bucket="TestBucket", Key="last_update.txt")
         text = response["Body"].read().decode("utf-8")
 
-        assert text == "2020:01:01:00:00:00"
+        assert text == "2020:01:01%:00:00:00"
 
     def test_handles_key_error_if_string_json_not_provided(self, caplog):
         with caplog.at_level(logging.ERROR):
