@@ -6,6 +6,6 @@ resource "aws_lambda_function" "transformation_lambda" {
   s3_bucket        = aws_s3_bucket.lambda_code_bucket.id
   # s3_key           = "function.zip"
   # layers        = []
-  source_code_hash = data.archive_file.lambda.output_base64sha256
+  # source_code_hash = data.archive_file.lambda.output_base64sha256
   # depends_on = [aws_lambda_layer_version.ingestion_layer] 
 }

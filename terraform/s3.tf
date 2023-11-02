@@ -7,7 +7,7 @@ resource "aws_s3_bucket" "ingestion_data_bucket" {
 }
 
 resource "aws_s3_bucket" "transformed_data_bucket" {
-  bucket_prefix = "nc-de-project-transformed-data-bucket-"
+  bucket_prefix = "nc-de-project-transformed-data-"
 }
 
 resource "aws_s3_bucket_notification" "ingestion_bucket_notification" {
