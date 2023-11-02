@@ -12,9 +12,11 @@ logger.setLevel(logging.INFO)
 
 def test_get_connection_returns_correct_log_when_successful_connection(caplog):
     '''
-    This test should return the correct log in CloudWatch, when passed correct details
+    This test should return the correct log in CloudWatch,
+    when passed correct details
     Requirements:
-        .env (using dotenv.load_dotenv module) file with credentials for accessing a database.
+        .env (using dotenv.load_dotenv module) file consisting of
+        credentials for accessing a database.
         credentials required are: user, host, port, database, and password.
     '''
     with caplog.at_level(logging.INFO):
@@ -27,12 +29,13 @@ def test_get_connection_returns_correct_log_when_successful_connection(caplog):
             'password': os.environ['PGPASSWORD'],
         }
         get_connection(database_credentials)
-        assert ('Connection to database Totesys has been established.' in caplog.text)
+        assert ('Connection to database Totesys has been established.'
+                in caplog.text)
 
 
 def test_get_connection_with_interface_error_no_user():
     '''
-    Testing for a InterfaceError. When passed incorrect details, 
+    Testing for a InterfaceError. When passed incorrect details,
     should return InterfaceError message.
     '''
     with pytest.raises(InterfaceError):
@@ -49,7 +52,7 @@ def test_get_connection_with_interface_error_no_user():
 
 def test_get_connection_with_interface_error_no_host():
     '''
-    Testing for a InterfaceError. When passed incorrect details, 
+    Testing for a InterfaceError. When passed incorrect details,
     should return InterfaceError message.
     '''
     with pytest.raises(InterfaceError):
@@ -66,7 +69,7 @@ def test_get_connection_with_interface_error_no_host():
 
 def test_for_interface_error_when_provided_incorrect_port():
     '''
-    Testing for a InterfaceError. When passed incorrect port, 
+    Testing for a InterfaceError. When passed incorrect port,
     should return InterfaceError log, and will timeout after 5 seconds.
     '''
     with pytest.raises(InterfaceError):
@@ -83,7 +86,7 @@ def test_for_interface_error_when_provided_incorrect_port():
 
 def test_for_interface_error_when_provided_no_port():
     '''
-    Testing for a InterfaceError. When passed incorrect port, 
+    Testing for a InterfaceError. When passed incorrect port,
     should return InterfaceError log, and will timeout after 5 seconds.
     '''
     with pytest.raises(InterfaceError):
@@ -100,7 +103,8 @@ def test_for_interface_error_when_provided_no_port():
 
 def test_get_connection_with_database_error_incorrect_database_name():
     '''
-    Testing for a DatabaseError. When passed incorrect details, should return DatabaseError.
+    Testing for a DatabaseError.
+    When passed incorrect details, should return DatabaseError.
     '''
     with pytest.raises(DatabaseError):
         load_dotenv()
@@ -116,7 +120,8 @@ def test_get_connection_with_database_error_incorrect_database_name():
 
 def test_get_connection_with_database_error_incorrect_password():
     '''
-    Testing for a DatabaseError. When passed incorrect details, should return DatabaseError.
+    Testing for a DatabaseError.
+    When passed incorrect details, should return DatabaseError.
     '''
     with pytest.raises(DatabaseError):
         load_dotenv()
@@ -132,7 +137,8 @@ def test_get_connection_with_database_error_incorrect_password():
 
 def test_get_connection_with_unexpected_error():
     '''
-    When passed an unexpected error, i.e. no password credentials passed, will return an error.
+    When passed an unexpected error,
+    i.e. no password credentials passed, will return an error.
     '''
     with pytest.raises(Exception):
         load_dotenv()
@@ -147,7 +153,8 @@ def test_get_connection_with_unexpected_error():
 
 def test_get_connection_with_key_error():
     '''
-    Testing for a key_error. When passed incorrect key, should return exception log message.
+    Testing for a key_error.
+    When passed incorrect key, should return exception log message.
     '''
     with pytest.raises(Exception):
         load_dotenv()

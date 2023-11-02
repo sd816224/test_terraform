@@ -13,7 +13,8 @@ def get_connection(database_credentials):
 
     Parameters
     ----------
-    database_credentials (from the get_credentials util) - which is a dictionary consisting of:
+    database_credentials (from the get_credentials util),
+    which is a dictionary consisting of:
         user
         host
         database
@@ -23,9 +24,9 @@ def get_connection(database_credentials):
     Raises
     ------
     DatabaseError: Will return an error message showing what is missing.
-        i.e. if the password is wrong, the error message will state password 
+        i.e. if the password is wrong, the error message will state password
         authentication has failed.
-    InterfaceError: 
+    InterfaceError:
 
     Returns
     -------
