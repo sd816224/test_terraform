@@ -32,7 +32,7 @@ def test_KeyError_with_missing_param(caplog):
         "password": "pa55word",
         "database": "database",
     }
-    client = boto3.client("secretsmanager")
+    client = boto3.client("secretsmanager", region_name="eu-west-2")
     client.create_secret(Name="Mock", SecretString=json.dumps(secret_string))
     with caplog.at_level(logging.ERROR):
         get_credentials("Mock")
@@ -48,7 +48,7 @@ def test_connection_params_look_like_expected():
         "password": "pa55word",
         "database": "database",
     }
-    client = boto3.client("secretsmanager")
+    client = boto3.client("secretsmanager", region_name="eu-west-2")
     client.create_secret(Name="Mock", SecretString=json.dumps(secret_string))
     assert get_credentials("Mock") == {
         "host": "real host",

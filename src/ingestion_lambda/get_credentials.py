@@ -2,6 +2,7 @@ from botocore.exceptions import ClientError
 import boto3
 import json
 import logging
+
 logger = logging.getLogger()
 logger.setLevel(logging.ERROR)
 
@@ -38,7 +39,7 @@ def get_credentials(secret_name):
     """
 
     try:
-        client = boto3.client("secretsmanager")
+        client = boto3.client("secretsmanager", region_name="eu-west-2")
         response = client.get_secret_value(SecretId=secret_name)
         secret = json.loads(response["SecretString"])
 
