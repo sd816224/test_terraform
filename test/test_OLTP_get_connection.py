@@ -10,7 +10,7 @@
 # logger.setLevel(logging.INFO)
 
 
-# def test_get_connection_returns_correct_log_when_successful_connection(caplog):
+# def test_get_connection_returns_correct_log_when_successful_con(caplog):
 #     '''
 #     This test should return the correct log in CloudWatch,
 #     when passed correct details
