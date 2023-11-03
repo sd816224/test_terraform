@@ -24,7 +24,9 @@ class TestGetLastUpload:
             CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
         )
         client.put_object(
-            Body="2023:11:2:00:00:00", Key="last_update.txt", Bucket="TestBucket"
+            Body="2023:11:2:00:00:00",
+            Key="last_update.txt",
+            Bucket="TestBucket",  # noqa E501
         )
         result = get_last_upload("TestBucket")
         assert result == dt(2023, 11, 2, 0, 0, 0)
@@ -36,7 +38,9 @@ class TestGetLastUpload:
             CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
         )
         client.put_object(
-            Body="2023:11:2:00:00:00", Key="not_a_file.txt", Bucket="TestBucket"
+            Body="2023:11:2:00:00:00",
+            Key="not_a_file.txt",
+            Bucket="TestBucket",  # noqa E501
         )
         result = get_last_upload("TestBucket")
         assert result == dt(2020, 1, 1, 0, 0, 0)
@@ -49,7 +53,9 @@ class TestGetLastUpload:
                 CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
             )
             client.put_object(
-                Body="2023:11:2:00:00:00", Key="not_a_file.txt", Bucket="TestBucket"
+                Body="2023:11:2:00:00:00",
+                Key="not_a_file.txt",
+                Bucket="TestBucket",  # noqa E501
             )
             get_last_upload("TestBucket")
 
@@ -63,7 +69,9 @@ class TestGetLastUpload:
                 CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
             )
             client.put_object(
-                Body="2023:11:2:00:00:00", Key="not_a_file.txt", Bucket="TestBucket"
+                Body="2023:11:2:00:00:00",
+                Key="not_a_file.txt",
+                Bucket="TestBucket",  # noqa E501
             )
             get_last_upload("NotABucket")
 

@@ -44,8 +44,14 @@ def test_get_data_get_all_table_names_with_multiple_table_and_column_names():
     response when passed a set of test database tables, column names, and data.
     """
     expected_updated_content = {
-        "table_a": [{"c1": 1, "c2": 2, "c3": 3}, {"c1": 11, "c2": 22, "c3": 33}],
-        "table_b": [{"c1": 10, "c2": 20, "c3": 30}, {"c1": 110, "c2": 220, "c3": 330}],
+        "table_a": [
+            {"c1": 1, "c2": 2, "c3": 3},
+            {"c1": 11, "c2": 22, "c3": 33},
+        ],  # noqa E501
+        "table_b": [
+            {"c1": 10, "c2": 20, "c3": 30},
+            {"c1": 110, "c2": 220, "c3": 330},
+        ],  # noqa E501
     }
     updated_json = json.dumps(
         expected_updated_content, indent=4, sort_keys=True, default=str
