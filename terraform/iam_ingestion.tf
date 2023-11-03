@@ -46,7 +46,7 @@ resource "aws_iam_policy" "ingestion_lambda_s3_policy" {
         Resource = "${aws_s3_bucket.lambda_code_bucket.arn}/*" 
       },
       {
-        Action = ["s3:PutObject", "s3:GetObject"],
+        Action = ["s3:*"],
         Effect = "Allow",
         Resource = "${aws_s3_bucket.ingestion_data_bucket.arn}/*",
       },
