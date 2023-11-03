@@ -39,40 +39,49 @@ resource "aws_iam_policy" "cloudwatch_logs_policy_for_ingestion_lambda" {
   })
 }
 
+resource "aws_iam_policy" "ingestion_lambda_s3_ingestion_bucket_policy" {
+  name        = "ingestion_lambda_s3_ingestion_bucket_policy"
+  policy = data.aws_iam_policy_document.code_lambda_s3_ingestion_bucket_document
+}
 resource "aws_iam_policy" "ingestion_lambda_s3_code_bucket_policy" {
   name        = "ingestion_lambda_s3_code_bucket_policy"
-  description = "Allows reading from code bucket and writing to ingestion data bucket"
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect   = "Allow",
-        Action   = "s3:GetObject",
-        Resource = ["${aws_s3_bucket.lambda_code_bucket.arn}/*"]
-      }
+  policy = data.aws_iam_policy_document.ingestion_lambda_s3_code_bucket_document
+}
+
+data "aws_iam_policy_document" "ingestion_lambda_s3_code_bucket_document" {
+  statement {
+    effect = "Allow"
+
+
+    actions = ["s3:GetObject"]
+
+    resources = [
+      "${aws_s3_bucket.lambda_code_bucket.arn}/*",
+      "${aws_s3_bucket.lambda_code_bucket.arn}",
     ]
-  })
+  }
 }
 
 resource "aws_iam_policy" "ingestion_lambda_s3_ingestion_bucket_policy" {
   name        = "ingestion_lambda_s3_ingestion_bucket_policy"
-  description = "Allows reading from code bucket and writing to ingestion data bucket"
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow",
-        Action = [
+  policy = data.aws_iam_policy_document.ingestion_lambda_s3_ingestion_bucket_document
+}
+
+data "aws_iam_policy_document" "ingestion_lambda_s3_ingestion_bucket_document" {
+  statement {
+    effect = "Allow"
+
+    actions = [
           "s3:GetObject",
+          "s3-object-lambda:GetObject",
           "s3:PutObject"
-        ],
-        Resource = [
-          "${aws_s3_bucket.ingestion_data_bucket.arn}/*",
-          "${aws_s3_bucket.ingestion_data_bucket.arn}"
         ]
-      }
+
+    resources = [
+      "${aws_s3_bucket.ingestion_data_bucket.arn}/*",
+      "${aws_s3_bucket.ingestion_data_bucket.arn}",
     ]
-  })
+  }
 }
 
 resource "aws_iam_policy" "lambda_access_secrets_manager_policy" {
