@@ -1,4 +1,3 @@
-
 import boto3
 import logging
 import json
@@ -59,12 +58,12 @@ def get_credentials(secret_name):
         If the secret name is not found in the secrets manager.
         If there is an unexpected error connecting to the secrets manager.
     KeyError
-        If the credentials json object has a missing key.
+        If the credentials object has a missing key.
 
     Returns
     ------
-    json
-        a json object that contains the database connection credentials
+    dictionary
+        a json-like object that contains the database connection credentials
         that can be accessed using the following keys:
         host, port, user, password, database
 
@@ -130,14 +129,14 @@ def get_connection(database_credentials):
         logger.info("Connection to database Totesys has been established.")
         return conn
     except DatabaseError as db:
-        logger.error(f"pg8000 - an error has occured: {db.args[0]['M']}")
+        logger.error(f"pg8000 - an error has occurred: {db.args[0]['M']}")
         raise db
     except InterfaceError as ie:
-        logger.error(f'pg8000 - an error has occured: \n"{ie}"')
+        logger.error(f'pg8000 - an error has occurred: \n"{ie}"')
         raise ie
     except Exception as exc:
         logger.error(
-            "An error has occured when \
+            "An error has occurred when \
             attempting to connect to the database."
         )
         raise exc
@@ -150,9 +149,11 @@ def get_last_upload(bucket_name):
     if no last update file exists it returns a default datetime object
 
     Args:
+    -----
         bucket name
 
     Raises:
+    -------
         clientError"""
 
     client = boto3.client("s3")
@@ -172,7 +173,7 @@ def get_last_upload(bucket_name):
         else:
             logger.error(e.response["Error"]["Message"])
     except Exception as e:
-        logger.error(f"An unexpected error occured {e}")
+        logger.error(f"An unexpected error occurred {e}")
 
 
 def get_data(conn, last_upload):
@@ -261,12 +262,14 @@ def write_file(bucket_name, json_data, timestamp=dt(2020, 1, 1, 0, 0, 0)):
     Overwrites a last_updated file with the time the handler was invoked.
 
     Args:
+    -----
         s3 bucket name
         json data from the get_data util (string)
-        datetime object timestamp from the lmabda handler when it is invoked
+        datetime object timestamp from the lambda handler when it is invoked
 
     Raises:
-        ClientError: Issue occured regarding putting object into s3 bucket.
+    -------
+        ClientError: Issue occurred regarding putting object into s3 bucket.
     """
 
     client = boto3.client("s3")
@@ -303,4 +306,3 @@ def write_file(bucket_name, json_data, timestamp=dt(2020, 1, 1, 0, 0, 0)):
         logger.error(f" {e.response['Error']['Message']}")
     except Exception as e:
         logger.error(e)
-
