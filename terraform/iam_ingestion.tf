@@ -40,7 +40,7 @@ resource "aws_iam_policy" "cloudwatch_logs_policy_for_ingestion_lambda" {
 }
 
 resource "aws_iam_policy" "ingestion_lambda_s3_code_bucket_policy" {
-  name        = "ingestion_lambda_s3_policy"
+  name        = "ingestion_lambda_s3_code_bucket_policy"
   description = "Allows reading from code bucket and writing to ingestion data bucket"
   policy = jsonencode({
     Version = "2012-10-17"
@@ -55,7 +55,7 @@ resource "aws_iam_policy" "ingestion_lambda_s3_code_bucket_policy" {
 }
 
 resource "aws_iam_policy" "ingestion_lambda_s3_ingestion_bucket_policy" {
-  name        = "ingestion_lambda_s3_policy"
+  name        = "ingestion_lambda_s3_ingestion_bucket_policy"
   description = "Allows reading from code bucket and writing to ingestion data bucket"
   policy = jsonencode({
     Version = "2012-10-17"
