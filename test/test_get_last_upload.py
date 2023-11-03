@@ -1,4 +1,4 @@
-from src.ingestion_lambda.get_last_upload import get_last_upload
+from src.ingestion_lambda.ingestion_lambda import get_last_upload
 from moto import mock_s3
 import pytest
 import os
@@ -24,9 +24,7 @@ class TestGetLastUpload:
             CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
         )
         client.put_object(
-            Body="2023:11:2:00:00:00",
-            Key="last_update.txt",
-            Bucket="TestBucket"
+            Body="2023:11:2:00:00:00", Key="last_update.txt", Bucket="TestBucket"
         )
         result = get_last_upload("TestBucket")
         assert result == dt(2023, 11, 2, 0, 0, 0)
@@ -38,9 +36,7 @@ class TestGetLastUpload:
             CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
         )
         client.put_object(
-            Body="2023:11:2:00:00:00",
-            Key="not_a_file.txt",
-            Bucket="TestBucket"
+            Body="2023:11:2:00:00:00", Key="not_a_file.txt", Bucket="TestBucket"
         )
         result = get_last_upload("TestBucket")
         assert result == dt(2020, 1, 1, 0, 0, 0)
@@ -53,9 +49,7 @@ class TestGetLastUpload:
                 CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
             )
             client.put_object(
-                Body="2023:11:2:00:00:00",
-                Key="not_a_file.txt",
-                Bucket="TestBucket"
+                Body="2023:11:2:00:00:00", Key="not_a_file.txt", Bucket="TestBucket"
             )
             get_last_upload("TestBucket")
 
@@ -69,9 +63,7 @@ class TestGetLastUpload:
                 CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
             )
             client.put_object(
-                Body="2023:11:2:00:00:00",
-                Key="not_a_file.txt",
-                Bucket="TestBucket"
+                Body="2023:11:2:00:00:00", Key="not_a_file.txt", Bucket="TestBucket"
             )
             get_last_upload("NotABucket")
 

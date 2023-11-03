@@ -1,4 +1,4 @@
-from src.ingestion_lambda.get_credentials import get_credentials
+from src.ingestion_lambda.ingestion_lambda import get_credentials
 import os
 import pytest
 import boto3

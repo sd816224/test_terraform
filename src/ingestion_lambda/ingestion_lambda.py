@@ -133,7 +133,10 @@ def get_connection(database_credentials):
         logger.error(f'pg8000 - an error has occured: \n"{ie}"')
         raise ie
     except Exception as exc:
-        logger.error("An error has occured when attempting to connect to the database.")
+        logger.error(
+            "An error has occured when \
+            attempting to connect to the database."
+        )
         raise exc
 
 
@@ -169,16 +172,16 @@ def get_last_upload(bucket_name):
         logger.error(f"An unexpected error occured {e}")
 
 
-def get_data(conn, last_fetch_ending_time):
+def get_data(conn, last_upload):
     """
-    Gets data from the connected database from last_fetch_ending_time
+    Gets data from the connected database from last_upload
 
 
     Parameters
     ----------
     conn: database connection instance
         type: pg8000 connect object
-    last_fetch_ending_time: the timestamp of the last fetched data file
+    last_upload: the timestamp of the last fetched data file
         type: datetime object
 
     Returns
@@ -204,17 +207,17 @@ def get_data(conn, last_fetch_ending_time):
             if table[0] == "address" or table[0] == "department":
                 content = conn.run(
                     f"""
-                                    SELECT * FROM {table[0]} 
+                                    SELECT * FROM {table[0]}
                                     """
                 )
-            # get updated content from table if table name not address or department
+            # get updated content from other tables
             else:
                 content = conn.run(
                     f"""
-                                    SELECT * FROM {table[0]} 
+                                    SELECT * FROM {table[0]}
                                     WHERE (last_updated > :date)
                                     """,
-                    date={last_fetch_ending_time.strftime("%Y-%m-%dT%H:%M:%S")},
+                    date={last_upload.strftime("%Y-%m-%dT%H:%M:%S")},
                 )
 
             # get all column names from the table
@@ -278,7 +281,9 @@ def write_file(bucket_name, json_data, timestamp=dt(2020, 1, 1, 0, 0, 0)):
         if json_data is None:
             raise Exception("No JSON data provided")
 
-        response = client.put_object(Body=json_data, Bucket=bucket_name, Key=file_name)
+        response = client.put_object(
+            Body=json_data, Bucket=bucket_name, Key=file_name
+        )  # noqa E501
         if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
             logger.info(f"Success. File {file_name} saved.")
 

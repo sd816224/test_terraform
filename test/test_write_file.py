@@ -1,4 +1,4 @@
-from src.ingestion_lambda.write_file import write_file
+from src.ingestion_lambda.ingestion_lambda import write_file
 from moto import mock_s3
 from datetime import datetime as dt
 import boto3
