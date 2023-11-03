@@ -41,11 +41,11 @@ resource "aws_iam_policy" "cloudwatch_logs_policy_for_ingestion_lambda" {
 
 resource "aws_iam_policy" "ingestion_lambda_s3_ingestion_bucket_policy" {
   name        = "ingestion_lambda_s3_ingestion_bucket_policy"
-  policy = data.aws_iam_policy_document.ingestion_lambda_s3_ingestion_bucket_document
+  policy = data.aws_iam_policy_document.ingestion_lambda_s3_ingestion_bucket_document.json
 }
 resource "aws_iam_policy" "ingestion_lambda_s3_code_bucket_policy" {
   name        = "ingestion_lambda_s3_code_bucket_policy"
-  policy = data.aws_iam_policy_document.ingestion_lambda_s3_code_bucket_document
+  policy = data.aws_iam_policy_document.ingestion_lambda_s3_code_bucket_document.json
 }
 
 data "aws_iam_policy_document" "ingestion_lambda_s3_code_bucket_document" {
