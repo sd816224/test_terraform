@@ -37,8 +37,8 @@ test_event = {
 
 
 def test_get_object_path_function_output_correct_bucket_and_file_name():
-    bucet_name, file_name = get_object_path(test_event['Records'])
-    assert bucet_name == 'test_bucket_name'
+    bucket_name, file_name = get_object_path(test_event['Records'])
+    assert bucket_name == 'test_bucket_name'
     assert file_name == 'test_file.json'
 
 
