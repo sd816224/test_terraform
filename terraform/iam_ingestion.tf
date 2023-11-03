@@ -100,6 +100,12 @@ resource "aws_iam_policy" "lambda_access_secrets_manager_policy" {
   })
 }
 
+resource "aws_iam_role_policy_attachment" "ingestion_lambda_rds_role_attachment" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonRDSReadOnlyAccess"
+  role       = aws_iam_role.role_for_ingestion_lambda.id
+}
+
+
 resource "aws_iam_role_policy_attachment" "ingestion_lambda_cw_role_attachment" {
   role       = aws_iam_role.role_for_ingestion_lambda.name
   policy_arn = aws_iam_policy.cloudwatch_logs_policy_for_ingestion_lambda.arn
