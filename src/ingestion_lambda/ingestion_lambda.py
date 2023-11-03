@@ -81,7 +81,7 @@ def get_credentials(secret_name):
             "password": secret["password"],
             "database": secret["database"],
         }
-
+        logger.info('connection parameters returned')
         return connection_params
 
     except ClientError as e:
@@ -162,7 +162,7 @@ def get_last_upload(bucket_name):
         response = client.get_object(Bucket=bucket_name, Key="last_update.txt")
         datetime_string = response["Body"].read().decode("utf-8")
         datetime_object = dt.strptime(datetime_string, "%Y:%m:%d:%H:%M:%S")
-
+        logger.info('datetime object returned')
         return datetime_object
     except ClientError as e:
         message = e.response["Error"]["Message"]
