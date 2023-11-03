@@ -25,8 +25,10 @@ def lambda_handler(event, context):
 
         json_data = get_data(connection, last_upload)
 
-        write_file(bucket_name, json_data, invocation_time)
-
+        if json_data != "{}":
+            write_file(bucket_name, json_data, invocation_time)
+        else:
+            logger.info("No new updates to write to file")
     except Exception as e:
         logger.error(e)
 
@@ -196,16 +198,24 @@ def get_data(conn, last_fetch_ending_time):
                             WHERE table_schema = 'public';
                             """
         )
-        # table_names.remove(["_prisma_migrations"])
-
-        for table in table_names:
-            # get updated content from table
-            content = conn.run(
-                f"""
-                                SELECT * FROM {table[0]}
-                                """,
-                # date={last_fetch_ending_time.strftime("%Y:%m:%d:%H:%M:%S")},
-            )
+        list_table_names = list(table_names)
+        list_table_names.remove(["_prisma_migrations"])
+        for table in list_table_names:
+            if table[0] == "address" or table[0] == "department":
+                content = conn.run(
+                    f"""
+                                    SELECT * FROM {table[0]} 
+                                    """
+                )
+            # get updated content from table if table name not address or department
+            else:
+                content = conn.run(
+                    f"""
+                                    SELECT * FROM {table[0]} 
+                                    WHERE (last_updated > :date)
+                                    """,
+                    date={last_fetch_ending_time.strftime("%Y-%m-%dT%H:%M:%S")},
+                )
 
             # get all column names from the table
             columns = conn.run(
@@ -222,7 +232,11 @@ def get_data(conn, last_fetch_ending_time):
             df = pd.DataFrame(content, columns=column_names)
             json_formatted = df.to_json(orient="records", date_format="iso")
             back_to_list = json.loads(json_formatted)
-            updated_content[table[0]] = back_to_list
+            if len(back_to_list) != 0:
+                updated_content[table[0]] = back_to_list
+
+        if list(updated_content.keys()) == ["department", "address"]:
+            updated_content = {}
 
         updated_json = json.dumps(
             updated_content, indent=4, sort_keys=True, default=str
