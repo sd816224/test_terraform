@@ -39,7 +39,7 @@ resource "aws_iam_policy" "cloudwatch_logs_policy_for_ingestion_lambda" {
   })
 }
 
-resource "aws_iam_policy" "ingestion_lambda_s3_policy" {
+resource "aws_iam_policy" "ingestion_lambda_s3_code_bucket_policy" {
   name        = "ingestion_lambda_s3_policy"
   description = "Allows reading from code bucket and writing to ingestion data bucket"
   policy = jsonencode({
@@ -49,10 +49,20 @@ resource "aws_iam_policy" "ingestion_lambda_s3_policy" {
         Effect = "Allow",
         Action = "s3:GetObject",
         Resource = ["${aws_s3_bucket.lambda_code_bucket.arn}/*"]
-      },
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy" "ingestion_lambda_s3_ingestion_bucket_policy" {
+  name        = "ingestion_lambda_s3_policy"
+  description = "Allows reading from code bucket and writing to ingestion data bucket"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
       {
         Effect = "Allow",
-        Action = ["s3:*"],
+        Action = ["s3:GetObject", "s3:PutObject"],
         Resource = ["${aws_s3_bucket.ingestion_data_bucket.arn}/*"]
       }
     ]
@@ -82,7 +92,12 @@ resource "aws_iam_role_policy_attachment" "ingestion_lambda_cw_role_attachment" 
 
 resource "aws_iam_role_policy_attachment" "ingestion_lambda_s3_policy_attachment" {
   role       = aws_iam_role.role_for_ingestion_lambda.name
-  policy_arn = aws_iam_policy.ingestion_lambda_s3_policy.arn
+  policy_arn = aws_iam_policy.ingestion_lambda_s3_code_bucket_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "ingestion_lambda_s3_policy_attachment" {
+  role       = aws_iam_role.role_for_ingestion_lambda.name
+  policy_arn = aws_iam_policy.ingestion_lambda_s3_ingestion_bucket_policy.arn
 }
 
 resource "aws_iam_role_policy_attachment" "ingestion_lambda_secrets_manager_attachment" {
