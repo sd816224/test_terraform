@@ -1,3 +1,4 @@
+
 import boto3
 import logging
 import json
@@ -302,3 +303,4 @@ def write_file(bucket_name, json_data, timestamp=dt(2020, 1, 1, 0, 0, 0)):
         logger.error(f" {e.response['Error']['Message']}")
     except Exception as e:
         logger.error(e)
+

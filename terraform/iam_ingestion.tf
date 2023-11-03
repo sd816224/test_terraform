@@ -21,14 +21,14 @@ resource "aws_iam_policy" "cloudwatch_logs_policy_for_ingestion_lambda" {
     Version = "2012-10-17",
     Statement = [
       {
-        actions   = "logs:CreateLogGroup",
-        effect   = "Allow",
-        resources = "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"
+        Action   = "logs:CreateLogGroup",
+        Effect   = "Allow",
+        Resource = "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"
       },
       {
-        actions   = ["logs:CreateLogStream","logs:PutLogEvents"]
-        effect   = "Allow",
-        resources = "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.ingestion_lambda}:*"
+        Action   = ["logs:CreateLogStream","logs:PutLogEvents"],
+        Effect   = "Allow",
+        Resource = "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.ingestion_lambda}:*"
       }
     ]
   })
@@ -41,30 +41,18 @@ resource "aws_iam_policy" "ingestion_lambda_s3_policy" {
     Version = "2012-10-17",
     Statement = [
       {
-        actions = "s3:GetObject",
-        effect = "Allow",
-        resources = "${aws_s3_bucket.lambda_code_bucket.arn}/*" # ??
+        Action = "s3:GetObject",
+        Effect = "Allow",
+        Resource = "${aws_s3_bucket.lambda_code_bucket.arn}/*" 
       },
       {
-        actions = "s3:PutObject",
-        effect = "Allow",
-        resources = "${aws_s3_bucket.ingestion_data_bucket.arn}/*",
+        Action = "s3:PutObject",
+        Effect = "Allow",
+        Resource = "${aws_s3_bucket.ingestion_data_bucket.arn}/*",
       },
     ]
   })
 }
-
-resource "aws_iam_role_policy_attachment" "ingestion_lambda_cw_role_attachment" {
-  role       = aws_iam_role.role_for_ingestion_lambda.name
-  policy_arn = aws_iam_policy.cloudwatch_logs_policy_for_ingestion_lambda.arn
-}
-
-resource "aws_iam_role_policy_attachment" "ingestion_lambda_s3_policy_attachment" {
-  role       = aws_iam_role.role_for_ingestion_lambda.name
-  policy_arn = aws_iam_policy.ingestion_lambda_s3_policy.arn
-}
-
-
 
 resource "aws_iam_policy" "lambda_access_secrets_manager_policy" {
   name        = "ingestion_lambda_secrets_manager_policy"
@@ -80,6 +68,16 @@ resource "aws_iam_policy" "lambda_access_secrets_manager_policy" {
       }
     ]
   })
+}
+
+resource "aws_iam_role_policy_attachment" "ingestion_lambda_cw_role_attachment" {
+  role       = aws_iam_role.role_for_ingestion_lambda.name
+  policy_arn = aws_iam_policy.cloudwatch_logs_policy_for_ingestion_lambda.arn
+}
+
+resource "aws_iam_role_policy_attachment" "ingestion_lambda_s3_policy_attachment" {
+  role       = aws_iam_role.role_for_ingestion_lambda.name
+  policy_arn = aws_iam_policy.ingestion_lambda_s3_policy.arn
 }
 
 resource "aws_iam_role_policy_attachment" "ingestion_lambda_secrets_manager_attachment" {
