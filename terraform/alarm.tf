@@ -8,12 +8,10 @@ resource "aws_sns_topic_subscription" "email_subscription" {
   endpoint  = "j.lee94@live.co.uk"
 }
 
-
 resource "aws_cloudwatch_log_metric_filter" "warning_metrics_filter" {
   name           = "ingestion-log-warning-filter"
   pattern        = "WARNING"
   log_group_name = "/aws/lambda/${aws_lambda_function.ingestion_lambda.function_name}"
-
 
   metric_transformation {
     name      = "warning-log-count"
@@ -34,7 +32,6 @@ resource "aws_cloudwatch_log_metric_filter" "error_metric_filter" {
   }
 }
 
-
 resource "aws_cloudwatch_metric_alarm" "error_alert" {
   alarm_name          = "ingestion-error"
   comparison_operator = "GreaterThanOrEqualToThreshold"
@@ -46,9 +43,7 @@ resource "aws_cloudwatch_metric_alarm" "error_alert" {
   threshold           = 1
   alarm_description   = "This metric monitors number of errors coming from the Ingestion Lambda in ten minute intervals"
   alarm_actions       = [aws_sns_topic.log_notification_topic.arn]
-
 }
-
 
 resource "aws_cloudwatch_metric_alarm" "warning_alert" {
   alarm_name          = "ingestion-warning"
@@ -68,7 +63,6 @@ resource "aws_cloudwatch_log_metric_filter" "runtime_error" {
   name           = "RuntimeError"
   pattern        = "RuntimeError"
   log_group_name = "/aws/lambda/${aws_lambda_function.ingestion_lambda.function_name}"
-
 
   metric_transformation {
     name      = "runtime-log-count"

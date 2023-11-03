@@ -33,21 +33,18 @@ resource "aws_s3_bucket" "transformed_data_bucket" {
 # resource "aws_s3_bucket_notification" "tranformed_bucket_notification" {
 #   bucket = aws_s3_bucket.transformed_data_bucket.id
  
-#  ###### ToDo:  cannot finish this permission until the lambda is made
- 
-#   # lambda_function {
-#   #   lambda_function_arn = aws_lambda_function.****.arn
-#   #   events              = ["s3:ObjectCreated:*"]
-#   #   filter_suffix       = ".parquet"
-#   # }
+#   lambda_function {
+#     lambda_function_arn = aws_lambda_function.warehouse_loading_lambda.arn
+#     events              = ["s3:ObjectCreated:*"]
+#     filter_suffix       = ".parquet"
+#   }
 #   depends_on = [aws_lambda_permission.loading_lambda_invoke_permission]
 # }
-
 
 # resource "aws_lambda_permission" "loading_lambda_invoke_permission" {
 #   statement_id  = "AllowS3Invocation"
 #   action        = "lambda:InvokeFunction"
-#   function_name = aws_lambda_function.***.function_name
+#   function_name = aws_lambda_function.warehouse_loading_lambda.function_name
 #   principal     = "s3.amazonaws.com"
 #   source_arn    = aws_s3_bucket.transformed_data_bucket.arn
 # }
