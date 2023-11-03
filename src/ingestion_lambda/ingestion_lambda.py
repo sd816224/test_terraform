@@ -1,12 +1,12 @@
-def lambda_handler(event, context):
-    credentials = get_credentials("totesys-production")
+# def lambda_handler(event, context):
+#     # credentials = get_credentials("totesys-production")
 
-    connection = get_connetion(credentials)
+#     # connection = get_connetion(credentials)
 
-    data = get_data(connection)
+#     # data = get_data(connection)
 
-    get_last_upload("")
+#     # get_last_upload("")
 
-    write_file
+#     # write_file
 
-    pass
+#     pass
