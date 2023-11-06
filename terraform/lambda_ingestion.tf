@@ -7,7 +7,5 @@ resource "aws_lambda_function" "ingestion_lambda" {
   s3_bucket        = aws_s3_bucket.lambda_code_bucket.id
   s3_key           = "ingestion_lambda/ingestion_lambda.zip"
   layers           = ["arn:aws:lambda:eu-west-2:336392948345:layer:AWSSDKPandas-Python311:2"]
-  source_code_hash = filebase64sha256(aws_s3_object.ingestion_lambda_code_upload.output_path)
-  # depends_on = [***layer***] 
 }
 
