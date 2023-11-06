@@ -277,7 +277,7 @@ def write_file(bucket_name, json_data, timestamp=dt(2020, 1, 1, 0, 0, 0)):
     day = date.day
     time = date.strftime("%H%M%S")
 
-    last_successful_timestamp = timestamp.strftime("%Y:%m:%d%:%H:%M:%S")
+    last_successful_timestamp = timestamp.strftime("%Y:%m:%d:%H:%M:%S")
 
     try:
         if json_data is None:
