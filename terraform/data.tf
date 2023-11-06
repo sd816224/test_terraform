@@ -6,6 +6,7 @@ data "archive_file" "ingestion_lambda_code_zip" {
   type        = "zip"
   source_file = "${path.module}/../src/ingestion_lambda/ingestion_lambda.py"
   output_path = "${path.module}/../ingestion_lambda/ingestion_lambda.zip"
+  output_base64sha256 = true
 }
 
 # data "archive_file" "transformation_lambda_code_zip" {
