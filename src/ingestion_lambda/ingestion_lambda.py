@@ -289,7 +289,10 @@ def write_file(bucket_name, json_data, timestamp=dt(2020, 1, 1, 0, 0, 0)):
             if table == "staff":
                 response = client.put_object(
                     Body=json.dumps(
-                        {table: json_data[table], "department": json_data["department"]}
+                        {
+                            table: json_data[table],
+                            "department": json_data["department"],
+                        }  # noqa E501
                     ),
                     Bucket=bucket_name,
                     Key=file_name,
@@ -300,7 +303,10 @@ def write_file(bucket_name, json_data, timestamp=dt(2020, 1, 1, 0, 0, 0)):
             elif table == "counterparty":
                 response = client.put_object(
                     Body=json.dumps(
-                        {table: json_data[table], "address": json_data["address"]}
+                        {
+                            table: json_data[table],
+                            "address": json_data["address"],
+                        }  # noqa E501
                     ),
                     Bucket=bucket_name,
                     Key=file_name,
