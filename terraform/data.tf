@@ -5,7 +5,7 @@ data "aws_region" "current"{}
 data "archive_file" "ingestion_lambda_code_zip" {
   type        = "zip"
   source_file = "${path.module}/../src/ingestion_lambda/ingestion_lambda.py"
-  output_path = "${path.module}/../src/ingestion_lambda/ingestion_lambda.zip"
+  output_path = "${path.module}/../ingestion_lambda/ingestion_lambda.zip"
 }
 
 # data "archive_file" "transformation_lambda_code_zip" {
