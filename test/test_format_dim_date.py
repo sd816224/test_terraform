@@ -1,5 +1,4 @@
 from src.transformation_lambda.format_dim_date import format_dim_date
-import datetime
 import pytest
 import logging
 
@@ -66,8 +65,10 @@ def test_output_rows_has_correct_key_names():
 
 def test_correct_output():
     result = format_dim_date(test_table)
+    from pprint import pprint
+    pprint(result)
     assert len(result) == 5
-    assert {'date_id': datetime.datetime(2023, 11, 2, 0, 0),
+    assert {'date_id': '2023-11-02',
             'day': 2,
             'day_name': 'Thursday',
             'day_of_week': 3,
@@ -76,7 +77,7 @@ def test_correct_output():
             'quarter': 3,
             'year': 2023} in result
 
-    assert {'date_id': datetime.datetime(2023, 11, 3, 0, 0),
+    assert {'date_id': '2023-11-03',
             'day': 3,
             'day_name': 'Friday',
             'day_of_week': 4,
@@ -84,7 +85,7 @@ def test_correct_output():
             'month_name': 'November',
             'quarter': 3,
             'year': 2023} in result
-    assert {'date_id': datetime.datetime(2023, 10, 30, 0, 0),
+    assert {'date_id': '2023-10-30',
             'day': 30,
             'day_name': 'Monday',
             'day_of_week': 0,
@@ -92,7 +93,7 @@ def test_correct_output():
             'month_name': 'October',
             'quarter': 3,
             'year': 2023} in result
-    assert {'date_id': datetime.datetime(2023, 11, 1, 0, 0),
+    assert {'date_id': '2023-11-01',
             'day': 1,
             'day_name': 'Wednesday',
             'day_of_week': 2,
@@ -100,7 +101,7 @@ def test_correct_output():
             'month_name': 'November',
             'quarter': 3,
             'year': 2023} in result
-    assert {'date_id': datetime.datetime(2023, 11, 5, 0, 0),
+    assert {'date_id': '2023-11-05',
             'day': 5,
             'day_name': 'Sunday',
             'day_of_week': 6,

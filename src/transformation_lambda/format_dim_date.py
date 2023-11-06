@@ -15,11 +15,11 @@ def format_dim_date(sales_order_table):
     return:
         type: list of list
             for each row:
-                date_id:datetime (object )
+                date_id:datetime (date ('%Y-%m-%d'))
                 year:year of the date (int)
                 month:month of the date (int)
                 day:day of the date (int)
-                day_of_week:day of the week 0 for monday, 6 for sunday(int)
+                day_of_week:weekday of date,0 for monday,6 for sunday(int)
                 day_name:weekday name of the date (str)
                 month_name: month name of the date (str)
                 quarter: quarter of the date (int)
@@ -52,7 +52,7 @@ def format_dim_date(sales_order_table):
         result = []
         for date in remove_duplicate:
             result.append({
-                'date_id': date,
+                'date_id': date.strftime('%Y-%m-%d'),
                 'year': date.year,
                 'month': date.month,
                 'day': date.day,
