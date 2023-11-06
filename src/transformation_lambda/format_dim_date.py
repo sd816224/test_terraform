@@ -32,6 +32,8 @@ def format_dim_date(sales_order_table):
         and without accessing the data warehouse
         do we assert new line again and again for the same date?
         do we need to avoid it? how?
+
+        im guessing the logic all done by loading lambda maybe
     '''
     try:
         # read updated content from input table
