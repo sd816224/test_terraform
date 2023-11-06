@@ -234,7 +234,6 @@ def get_data(conn, last_upload):
                                 """
             )
             column_names = [name[0] for name in columns]
-
             # integrate column names and conn to the dataframe
             df = pd.DataFrame(content, columns=column_names)
             json_formatted = df.to_json(orient="records", date_format="iso")
@@ -242,7 +241,6 @@ def get_data(conn, last_upload):
             if len(back_to_list) != 0:
                 updated_content[table[0]] = back_to_list
         conn.close()
-
         if list(updated_content.keys()) == ["department", "address"]:
             updated_content = {}
 

@@ -5,7 +5,7 @@ resource "aws_sns_topic" "log_notification_topic" {
 resource "aws_sns_topic_subscription" "email_subscription" {
   topic_arn = aws_sns_topic.log_notification_topic.arn
   protocol  = "email"
-  endpoint  = "j.lee94@live.co.uk"
+  endpoint  = "nc404namenotfound@gmail.com"
 }
 
 resource "aws_cloudwatch_log_metric_filter" "warning_metrics_filter" {
