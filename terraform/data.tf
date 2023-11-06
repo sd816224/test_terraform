@@ -26,6 +26,7 @@ resource "aws_s3_object" "ingestion_lambda_code_upload" {
   source = data.archive_file.ingestion_lambda_code_zip.output_path
 }
 
+
 # resource "aws_s3_object" "transformation_lambda_code_upload" {
 #   bucket = aws_s3_bucket.lambda_code_bucket.id
 #   key    = "transformation_lambda/transformation_lambda.zip"
