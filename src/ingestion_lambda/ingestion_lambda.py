@@ -232,7 +232,7 @@ def get_data(conn, last_upload):
                                 """
             )
             column_names = [name[0] for name in columns]
-            conn.close
+            conn.close()
             # integrate column names and conn to the dataframe
             df = pd.DataFrame(content, columns=column_names)
             json_formatted = df.to_json(orient="records", date_format="iso")
