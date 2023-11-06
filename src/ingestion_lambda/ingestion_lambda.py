@@ -13,7 +13,9 @@ logger.setLevel(logging.INFO)
 
 def lambda_handler(event, context):
     invocation_time = dt.now()
-    bucket_name = "nc-de-project-ingested-data-bucket-20231102173127149000000003"  # noqa E501
+    bucket_name = (
+        "nc-de-project-ingested-data-bucket-20231102173127149000000003"  # noqa E501
+    )
     secret_name = "totesys-production"
 
     try:
@@ -25,7 +27,7 @@ def lambda_handler(event, context):
 
         json_data = get_data(connection, last_upload)
 
-        if json_data != "{}":
+        if json_data != {}:
             write_file(bucket_name, json_data, invocation_time)
         else:
             logger.info("No new updates to write to file")
@@ -160,7 +162,7 @@ def get_last_upload(bucket_name):
         response = client.get_object(Bucket=bucket_name, Key="last_update.txt")
         datetime_string = response["Body"].read().decode("utf-8")
         datetime_object = dt.strptime(datetime_string, "%Y:%m:%d:%H:%M:%S")
-        logger.info("datetime object returned")
+        logger.info("last updated datetime object returned")
         return datetime_object
     except ClientError as e:
         message = e.response["Error"]["Message"]
@@ -232,22 +234,18 @@ def get_data(conn, last_upload):
                                 """
             )
             column_names = [name[0] for name in columns]
-            conn.close()
             # integrate column names and conn to the dataframe
             df = pd.DataFrame(content, columns=column_names)
             json_formatted = df.to_json(orient="records", date_format="iso")
             back_to_list = json.loads(json_formatted)
             if len(back_to_list) != 0:
                 updated_content[table[0]] = back_to_list
-
+        conn.close()
         if list(updated_content.keys()) == ["department", "address"]:
             updated_content = {}
 
-        updated_json = json.dumps(
-            updated_content, indent=4, sort_keys=True, default=str
-        )
         logger.info("Updated JSON content has been retrieved.")
-        return updated_json
+        return updated_content
     except Exception as exc:
         logger.error(exc)
         raise exc
@@ -277,27 +275,59 @@ def write_file(bucket_name, json_data, timestamp=dt(2020, 1, 1, 0, 0, 0)):
     day = date.day
     time = date.strftime("%H%M%S")
 
-    last_successful_timestamp = timestamp.strftime("%Y:%m:%d%:%H:%M:%S")
-
-    file_name = f"{year}/{month}/{day}/data-{time}.json"
+    last_successful_timestamp = timestamp.strftime("%Y:%m:%d:%H:%M:%S")
 
     try:
         if json_data is None:
             raise Exception("No JSON data provided")
 
-        response = client.put_object(
-            Body=json_data, Bucket=bucket_name, Key=file_name
-        )  # noqa E501
-        if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
-            logger.info(f"Success. File {file_name} saved.")
+        for table in json_data:
+            file_name = f"{table}/{year}/{month}/{day}/data-{time}.json"
 
-            datefileresponse = client.put_object(
-                Body=last_successful_timestamp,
-                Bucket=bucket_name,
-                Key="last_update.txt",
-            )
-            if datefileresponse["ResponseMetadata"]["HTTPStatusCode"] == 200:
-                logger.info("Success. last_update.txt overwritten")
+            if table == "staff":
+                response = client.put_object(
+                    Body=json.dumps(
+                        {
+                            table: json_data[table],
+                            "department": json_data["department"],
+                        }  # noqa E501
+                    ),
+                    Bucket=bucket_name,
+                    Key=file_name,
+                )  # noqa E501
+                if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
+                    logger.info(f"Success. File {file_name} saved.")
+
+            elif table == "counterparty":
+                response = client.put_object(
+                    Body=json.dumps(
+                        {
+                            table: json_data[table],
+                            "address": json_data["address"],
+                        }  # noqa E501
+                    ),
+                    Bucket=bucket_name,
+                    Key=file_name,
+                )  # noqa E501
+                if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
+                    logger.info(f"Success. File {file_name} saved.")
+
+            else:
+                response = client.put_object(
+                    Body=json.dumps({table: json_data[table]}),
+                    Bucket=bucket_name,
+                    Key=file_name,
+                )  # noqa E501
+                if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
+                    logger.info(f"Success. File {file_name} saved.")
+
+        datefileresponse = client.put_object(
+            Body=last_successful_timestamp,
+            Bucket=bucket_name,
+            Key="last_update.txt",
+        )
+        if datefileresponse["ResponseMetadata"]["HTTPStatusCode"] == 200:
+            logger.info("Success. last_update.txt overwritten")
     except KeyError as e:
         logger.error(f" {e.response['Error']['Message']}")
     except ClientError as e:
