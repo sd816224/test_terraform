@@ -1,6 +1,5 @@
 from src.ingestion_lambda.ingestion_lambda import get_data
 from unittest.mock import Mock
-import json
 import pytest
 import logging
 from datetime import datetime as dt

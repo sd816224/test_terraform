@@ -48,7 +48,9 @@ class TestWriteFile:
         write_file("TestBucket", testJSON, timestamp)
 
         response = s3.list_objects(Bucket="TestBucket")
-        assert response["Contents"][0]["Key"] == "age/2020/1/1/data-173019.json"
+        assert (
+            response["Contents"][0]["Key"] == "age/2020/1/1/data-173019.json"
+        )  # noqa E501
 
     @time_machine.travel(dt(2020, 1, 1, 17, 30, 19))
     def test_successful_log_output_is_correct(self, caplog):
@@ -63,7 +65,8 @@ class TestWriteFile:
             write_file("TestBucket", testJSON, timestamp)
 
             assert (
-                "Success. File age/2020/1/1/data-173019.json saved." in caplog.text
+                "Success. File age/2020/1/1/data-173019.json saved."
+                in caplog.text  # noqa: E501
             )  # noqa: E501
 
     def test_raises_client_error_if_invalid_bucket_name(self, caplog):
