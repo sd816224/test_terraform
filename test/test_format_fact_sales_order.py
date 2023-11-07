@@ -1,4 +1,8 @@
-from src.transformation_lambda.format_sales_order import format_sales_order
+from src.transformation_lambda.format_fact_sales_order import format_fact_sales_order # noqa E501
+import logging
+
+logger = logging.getLogger("TestLogger")
+logger.setLevel(logging.INFO)
 
 
 def test_should_split_the_date_and_time():
@@ -38,7 +42,7 @@ def test_should_split_the_date_and_time():
             4,
         ]
     ]
-    assert format_sales_order(json) == expected
+    assert format_fact_sales_order(json) == expected
 
 
 def test_should_work_for_multiple_dicts():
@@ -139,7 +143,7 @@ def test_should_work_for_multiple_dicts():
         ],
     ]
 
-    assert format_sales_order(json) == expected
+    assert format_fact_sales_order(json) == expected
 
 
 def test_should_not_mutate_original_data():
@@ -189,7 +193,7 @@ def test_should_not_mutate_original_data():
             },
         ]
     }
-    format_sales_order(json)
+    format_fact_sales_order(json)
     expected = {
         "sales_order": [
             {
@@ -350,4 +354,15 @@ def test_should_remove_duplicates():
             19,
         ],
     ]
-    assert format_sales_order(json) == expected
+    assert format_fact_sales_order(json) == expected
+
+
+def test_should_log_a_warning_if_key_is_missing(caplog):
+    with caplog.at_level(logging.ERROR):
+        json = {"sales_order": [{"spam": "eggs"}]}
+        format_fact_sales_order(json)
+        assert (
+            "KeyError: missing key 'created_at'.\n Please check file for errors at line 15.\n Continuing with rest of JSON file" # noqa E501
+            in caplog.text
+        )
+
