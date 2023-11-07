@@ -1,6 +1,6 @@
 import logging
 
-logger = logging.getLogger('MyLogger')
+logger = logging.getLogger("MyLogger")
 logger.setLevel(logging.INFO)
 
 currency_name = {
@@ -11,7 +11,7 @@ currency_name = {
 
 
 def format_dim_currency(currency_table):
-    '''
+    """
     Formats the ingested currency table into the correct format.
 
     Parameters
@@ -32,30 +32,39 @@ def format_dim_currency(currency_table):
         currency_id
         currency_code
         currency_name
-    '''
+    """
+    currency_name = {
+        "GBP": "Pound Sterling",
+        "USD": "United States dollar",
+        "EUR": "Euros",
+    }
+
     try:
-        content = currency_table['currency']
+        content = currency_table["currency"]
 
         all_currencies = []
         for row in content:
-
-            all_currencies.append({
-                'currency_id': row['currency_id'],
-                'currency_code': row['currency_code'],
-                'currency_name': currency_name[row['currency_code']]
-            })
+            all_currencies.append(
+                {
+                    "currency_id": row["currency_id"],
+                    "currency_code": row["currency_code"],
+                    "currency_name": currency_name[row["currency_code"]],
+                }
+            )
 
         list_of_list = []
         for row in all_currencies:
-            list_of_list.append([
-                row['currency_id'],
-                row['currency_code'],
-                row['currency_name'],
-            ])
+            list_of_list.append(
+                [
+                    row["currency_id"],
+                    row["currency_code"],
+                    row["currency_name"],
+                ]
+            )
         return list_of_list
 
     except KeyError as k:
-        logger.error(f'Error retrieving data, {k}')
+        logger.error(f"Error retrieving data, {k}")
 
     except Exception as e:
         logger.error(e)
