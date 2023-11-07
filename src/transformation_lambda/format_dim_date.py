@@ -64,7 +64,20 @@ def format_dim_date(sales_order_table):
                 'quarter': 1 + (dt(2020, 9, 1).month - 1) // 3,
             })
 
-        return result
+        # transfer to list of list
+        list_list = []
+        for row in result:
+            list_list.append([
+                row['date_id'],
+                row['year'],
+                row['month'],
+                row['day'],
+                row['day_of_week'],
+                row['day_name'],
+                row['month_name'],
+                row['quarter'],
+                ])
+        return list_list
 
     except KeyError as k:
         logger.error(f'Error retrieving data, {k}')
