@@ -14,6 +14,7 @@ def format_dim_staff(staff_data):
 
     Raises
     ------
+        AttributeError if data not in dictionary format
         KeyError if incorrect staff data provided
         Warning if a staff record cannot be formatted correctly
 
