@@ -6,9 +6,8 @@ logger = logging.getLogger("transformation_lambda")
 logger.setLevel(logging.INFO)
 
 
-
 def format_fact_sales_order(sales_order_json):
-    '''
+    """
     Formats the sales_order data ready to be inserted
     into the fact_sales_order table.
 
@@ -26,8 +25,8 @@ def format_fact_sales_order(sales_order_json):
 
     Returns
     -------
-        A list of lists.    
-    '''
+        A list of lists.
+    """
     json = sales_order_json["sales_order"]
     sales_order_parquet = []
     try:
@@ -63,7 +62,7 @@ def format_fact_sales_order(sales_order_json):
         tb = traceback.extract_tb(ke.__traceback__)
         line_number = tb[-1].lineno
         logger.error(
-            f"KeyError: missing key {ke}.\n Please check file for errors at line {line_number}.\n Continuing with rest of JSON file." # noqa E501
+            f"KeyError: missing key {ke}.\n Please check file for errors at line {line_number}.\n Continuing with rest of JSON file."  # noqa E501
         )
     except Exception as e:
         tb = traceback.extract_tb(e.__traceback__)
