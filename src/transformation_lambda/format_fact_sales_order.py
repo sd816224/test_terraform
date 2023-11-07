@@ -58,8 +58,6 @@ def format_fact_sales_order(sales_order_json):
                 sales_order_parquet.append(row)
         return sales_order_parquet
     except KeyError as ke:
-        logger.error(
-            f"KeyError: missing key {ke}."
-        )
+        logger.error(f"KeyError: missing key {ke}.")
     except Exception as e:
         logger.error(f"Unexpected Error: {e}")
