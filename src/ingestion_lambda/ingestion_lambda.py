@@ -281,6 +281,9 @@ def write_file(bucket_name, json_data, timestamp=dt(2020, 1, 1, 0, 0, 0)):
         if json_data is None:
             raise Exception("No JSON data provided")
 
+        if not isinstance(json_data, dict):
+            raise Exception("Updated data type invalid. Dict expected.")
+
         for table in json_data:
             file_name = f"{table}/{year}/{month}/{day}/data-{time}.json"
 

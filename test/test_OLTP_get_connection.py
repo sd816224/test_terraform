@@ -1,168 +1,158 @@
-# import os
-# import logging
-# import pytest
-# from dotenv import load_dotenv
-# from pg8000 import DatabaseError, InterfaceError  # Connection,
-# from src.ingestion_lambda.OLTP_get_connection import get_connection
+import os
+import subprocess
+import time
+import logging
+import pytest
+from pg8000 import DatabaseError, InterfaceError
+from src.ingestion_lambda.ingestion_lambda import get_connection
+
+logger = logging.getLogger("MyLogger")
+logger.setLevel(logging.INFO)
 
 
-# logger = logging.getLogger('MyLogger')
-# logger.setLevel(logging.INFO)
+@pytest.fixture(scope="module")
+def pg_container():
+    test_dir = os.path.dirname(os.path.abspath(__file__))
+    compose_path = os.path.join(test_dir, "..", "docker-compose.yaml")
+    subprocess.run(
+        ["docker", "compose", "-f", compose_path, "up", "-d"], check=False
+    )  # noqa: E501
+    try:
+        max_attempts = 5
+        for _ in range(max_attempts):
+            result = subprocess.run(
+                [
+                    "docker",
+                    "exec",
+                    "postgres",
+                    "pg_isready",
+                    "-h",
+                    "localhost",
+                    "-U",
+                    "testdb",
+                ],
+                stdout=subprocess.PIPE,
+                check=False,
+            )
+            if result.returncode == 0:
+                break
+            time.sleep(2)
+        else:
+            raise TimeoutError(
+                """PostgreSQL container is not responding,
+                cancelling fixture setup."""
+            )
+        yield
+    finally:
+        subprocess.run(
+            ["docker", "compose", "-f", compose_path, "down"], check=False
+        )  # noqa: E501
 
 
-# def test_get_connection_returns_correct_log_when_successful_con(caplog):
-#     '''
-#     This test should return the correct log in CloudWatch,
-#     when passed correct details
-#     Requirements:
-#         .env (using dotenv.load_dotenv module) file consisting of
-#         credentials for accessing a database.
-#         credentials required are: user, host, port, database, and password.
-#     '''
-#     with caplog.at_level(logging.INFO):
-#         load_dotenv()
-#         database_credentials = {
-#             'user': os.environ['PGUSER'],
-#             'host': os.environ['PGHOST'],
-#             'port': os.environ['PGPORT'],
-#             'database': os.environ['DB'],
-#             'password': os.environ['PGPASSWORD'],
-#         }
-#         get_connection(database_credentials)
-#         assert ('Connection to database Totesys has been established.'
-#                 in caplog.text)
+def test_get_connection_returns_correct_log_when_successful_con(
+    pg_container, caplog
+):  # noqa: E501
+    """
+    This test should return the correct log in CloudWatch,
+    when passed correct details to establish connection with the database.
+
+    Requirements:
+        dictionary object with required database credentials:
+        user, host, port, database, and password.
+    """
+    with caplog.at_level(logging.INFO):
+        database_credentials = {
+            "user": "testuser",
+            "password": "testpass",
+            "database": "testdb",
+            "host": "localhost",
+            "port": 5433,
+        }
+        get_connection(database_credentials)
+        assert (
+            "Connection to database Totesys has been established."
+            in caplog.text  # noqa: E501
+        )
 
 
-# def test_get_connection_with_interface_error_no_user():
-#     '''
-#     Testing for a InterfaceError. When passed incorrect details,
-#     should return InterfaceError message.
-#     '''
-#     with pytest.raises(InterfaceError):
-#         load_dotenv()
-#         database_credentials = {
-#             'user': '',
-#             'host': os.environ['PGHOST'],
-#             'port': os.environ['PGPORT'],
-#             'database': os.environ['DB'],
-#             'password': os.environ['PGPASSWORD'],
-#         }
-#         get_connection(database_credentials)
+def test_get_connection_with_interface_error_no_user(pg_container):
+    """
+    Testing for a InterfaceError. When passed incorrect user,
+    should return InterfaceError message.
+    """
+    with pytest.raises(InterfaceError):
+        database_credentials = {
+            "user": "",
+            "password": "testpass",
+            "database": "testdb",
+            "host": "localhost",
+            "port": 5433,
+        }
+        get_connection(database_credentials)
 
 
-# def test_get_connection_with_interface_error_no_host():
-#     '''
-#     Testing for a InterfaceError. When passed incorrect details,
-#     should return InterfaceError message.
-#     '''
-#     with pytest.raises(InterfaceError):
-#         load_dotenv()
-#         database_credentials = {
-#             'user': os.environ['PGUSER'],
-#             'host': '',
-#             'port': os.environ['PGPORT'],
-#             'database': os.environ['DB'],
-#             'password': os.environ['PGPASSWORD'],
-#         }
-#         get_connection(database_credentials)
+def test_get_connection_with_interface_error_no_host(pg_container):
+    """
+    Testing for a InterfaceError. When passed incorrect host,
+    should return InterfaceError message.
+    """
+    with pytest.raises(InterfaceError):
+        database_credentials = {
+            "user": "testuser",
+            "password": "testpass",
+            "database": "testdb",
+            "host": "incorrect-host",
+            "port": 5433,
+        }
+        get_connection(database_credentials)
 
 
-# def test_for_interface_error_when_provided_incorrect_port():
-#     '''
-#     Testing for a InterfaceError. When passed incorrect port,
-#     should return InterfaceError log, and will timeout after 5 seconds.
-#     '''
-#     with pytest.raises(InterfaceError):
-#         load_dotenv()
-#         database_credentials = {
-#             'user': os.environ['PGUSER'],
-#             'host': os.environ['PGHOST'],
-#             'port': 1,
-#             'database': os.environ['DB'],
-#             'password': os.environ['PGPASSWORD'],
-#         }
-#         get_connection(database_credentials)
+def test_for_interface_error_when_provided_incorrect_port(pg_container):
+    """
+    Testing for a InterfaceError. When passed incorrect port,
+    should return InterfaceError log.
+    """
+    with pytest.raises(InterfaceError):
+        database_credentials = {
+            "user": "testuser",
+            "password": "testpass",
+            "database": "testdb",
+            "host": "localhost",
+            "port": 1000,
+        }
+        get_connection(database_credentials)
 
 
-# def test_for_interface_error_when_provided_no_port():
-#     '''
-#     Testing for a InterfaceError. When passed incorrect port,
-#     should return InterfaceError log, and will timeout after 5 seconds.
-#     '''
-#     with pytest.raises(InterfaceError):
-#         load_dotenv()
-#         database_credentials = {
-#             'user': os.environ['PGUSER'],
-#             'host': os.environ['PGHOST'],
-#             'port': '',
-#             'database': os.environ['DB'],
-#             'password': os.environ['PGPASSWORD'],
-#         }
-#         get_connection(database_credentials)
+def test_get_connection_with_database_error_incorrect_database_name(
+    pg_container,
+):  # noqa: E501
+    """
+    Testing for a DatabaseError.
+    When passed incorrect database name
+    should return DatabaseError.
+    """
+    with pytest.raises(DatabaseError):
+        database_credentials = {
+            "user": "testuser",
+            "password": "testpass",
+            "database": "wrong-db-name",
+            "host": "localhost",
+            "port": 5433,
+        }
+        get_connection(database_credentials)
 
 
-# def test_get_connection_with_database_error_incorrect_database_name():
-#     '''
-#     Testing for a DatabaseError.
-#     When passed incorrect details, should return DatabaseError.
-#     '''
-#     with pytest.raises(DatabaseError):
-#         load_dotenv()
-#         database_credentials = {
-#             'user': os.environ['PGUSER'],
-#             'host': os.environ['PGHOST'],
-#             'port': os.environ['PGPORT'],
-#             'database': 'wrong database name',
-#             'password': os.environ['PGPASSWORD'],
-#         }
-#         get_connection(database_credentials)
-
-
-# def test_get_connection_with_database_error_incorrect_password():
-#     '''
-#     Testing for a DatabaseError.
-#     When passed incorrect details, should return DatabaseError.
-#     '''
-#     with pytest.raises(DatabaseError):
-#         load_dotenv()
-#         database_credentials = {
-#             'user': os.environ['PGUSER'],
-#             'host': os.environ['PGHOST'],
-#             'port': os.environ['PGPORT'],
-#             'database': os.environ['DB'],
-#             'password': '',
-#         }
-#         get_connection(database_credentials)
-
-
-# def test_get_connection_with_unexpected_error():
-#     '''
-#     When passed an unexpected error,
-#     i.e. no password credentials passed, will return an error.
-#     '''
-#     with pytest.raises(Exception):
-#         load_dotenv()
-#         database_credentials = {
-#             'user': os.environ['PGUSER'],
-#             'host': os.environ['PGHOST'],
-#             'port': os.environ['PGPORT'],
-#             'database': os.environ['DB'],
-#         }
-#         get_connection(database_credentials)
-
-
-# def test_get_connection_with_key_error():
-#     '''
-#     Testing for a key_error.
-#     When passed incorrect key, should return exception log message.
-#     '''
-#     with pytest.raises(Exception):
-#         load_dotenv()
-#         database_credentials = {
-#             'user': os.environ['PGUSER'],
-#             'host': os.environ['PGHOST'],
-#             'port': os.environ['PGPORT'],
-#             'database': os.environ['DB'],
-#             'incorrect_key': os.environ['PASSWORD'],
-#         }
-#         get_connection(database_credentials)
+def test_get_connection_with_database_error_incorrect_password(pg_container):
+    """
+    Testing for a DatabaseError.
+    When passed incorrect details, should return DatabaseError.
+    """
+    with pytest.raises(DatabaseError):
+        database_credentials = {
+            "user": "testuser",
+            "password": "wrong-password",
+            "database": "testdb",
+            "host": "localhost",
+            "port": 5433,
+        }
+        get_connection(database_credentials)

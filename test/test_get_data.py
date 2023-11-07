@@ -1,9 +1,9 @@
 from src.ingestion_lambda.ingestion_lambda import get_data
 from unittest.mock import Mock
-import json
 import pytest
 import logging
 from datetime import datetime as dt
+import time_machine
 
 
 logger = logging.getLogger("MyLogger")
@@ -38,6 +38,7 @@ def mock_run_with_incorrect_columns(str, date="ss"):
         return [["c1"], ["c2"]]
 
 
+@time_machine.travel(dt(2020, 1, 1, 17, 30, 19))
 def test_get_data_get_all_table_names_with_multiple_table_and_column_names():
     """
     This test uses the mock data as the connection, and tests the correct
@@ -53,13 +54,11 @@ def test_get_data_get_all_table_names_with_multiple_table_and_column_names():
             {"c1": 110, "c2": 220, "c3": 330},
         ],  # noqa E501
     }
-    updated_json = json.dumps(
-        expected_updated_content, indent=4, sort_keys=True, default=str
-    )
+
     conn_mock = Mock()
     conn_mock.run.side_effect = mock_run
     dt_object = dt.strptime("2020:1:1:00:00:00", "%Y:%m:%d:%H:%M:%S")
-    assert get_data(conn_mock, dt_object) == updated_json
+    assert get_data(conn_mock, dt_object) == expected_updated_content
 
 
 def test_get_data_returns_correct_log_when_successful_connection(caplog):
