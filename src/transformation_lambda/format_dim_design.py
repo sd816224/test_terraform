@@ -37,7 +37,18 @@ def format_dim_design(design_table):
                 'file_location': row['file_location'],
                 'file_name': row['file_name'],
             })
-        return result
+
+        # transfer to list of list
+        list_list = []
+        for row in result:
+            list_list.append([
+                row['design_id'],
+                row['design_name'],
+                row['file_location'],
+                row['file_name'],
+                ])
+        return list_list
+
     except KeyError as k:
         logger.error(f'Error retrieving data, {k}')
 

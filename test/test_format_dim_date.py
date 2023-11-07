@@ -5,110 +5,73 @@ import logging
 test_table = {
     "sales_order": [
         {
-            "agreed_delivery_date": "2023-11-02",
-            "agreed_delivery_location_id": 10,
-            "agreed_payment_date": "2023-11-03",
-            "counterparty_id": 6,
-            "created_at": "2023-10-30T08:27:09.957",
-            "currency_id": 3,
-            "design_id": 112,
-            "last_updated": "2023-10-30T08:27:09.957",
             "sales_order_id": 4981,
+            "created_at": "2023-10-30T08:27:09.957",
+            "last_updated": "2023-10-30T08:27:09.957",
+            "design_id": 112,
             "staff_id": 5,
+            "counterparty_id": 6,
+            "units_sold": 26768,
             "unit_price": 2.64,
-            "units_sold": 26768
-        },
-        {
+            "currency_id": 3,
             "agreed_delivery_date": "2023-11-02",
-            "agreed_delivery_location_id": 6,
-            "agreed_payment_date": "2023-11-02",
-            "counterparty_id": 5,
-            "created_at": "2023-10-30T09:51:09.719",
-            "currency_id": 3,
-            "design_id": 131,
-            "last_updated": "2023-10-30T09:51:09.719",
-            "sales_order_id": 4982,
-            "staff_id": 15,
-            "unit_price": 3.87,
-            "units_sold": 66274
+            "agreed_payment_date": "2023-11-03",
+            "agreed_delivery_location_id": 10,
         },
         {
-            "agreed_delivery_date": "2023-11-01",
-            "agreed_delivery_location_id": 17,
-            "agreed_payment_date": "2023-11-05",
-            "counterparty_id": 17,
-            "created_at": "2023-11-01T16:06:09.791",
+            "sales_order_id": 4982,
+            "created_at": "2023-10-30T09:51:09.719",
+            "last_updated": "2023-10-30T09:51:09.719",
+            "design_id": 131,
+            "staff_id": 15,
+            "counterparty_id": 5,
+            "units_sold": 66274,
+            "unit_price": 3.87,
             "currency_id": 3,
-            "design_id": 147,
-            "last_updated": "2023-11-01T16:06:09.791",
+            "agreed_delivery_date": "2023-11-02",
+            "agreed_payment_date": "2023-11-02",
+            "agreed_delivery_location_id": 6,
+        },
+        {
             "sales_order_id": 5035,
+            "created_at": "2023-11-01T16:06:09.791",
+            "last_updated": "2023-11-01T16:06:09.791",
+            "design_id": 147,
             "staff_id": 1,
+            "counterparty_id": 17,
+            "units_sold": 65588,
             "unit_price": 2.59,
-            "units_sold": 65588
+            "currency_id": 3,
+            "agreed_delivery_date": "2023-11-01",
+            "agreed_payment_date": "2023-11-05",
+            "agreed_delivery_location_id": 17,
         }
     ]
 }
 
 
-def test_output_rows_has_correct_key_names():
-    result = format_dim_date(test_table)
-    for date in result:
-        assert 'date_id' in date
-        assert 'day' in date
-        assert 'day_name' in date
-        assert 'day_of_week' in date
-        assert 'month' in date
-        assert 'month_name' in date
-        assert 'quarter' in date
-        assert 'year' in date
-
+# def test_output_rows_has_correct_key_names():
+#     result = format_dim_date(test_table)
+#     for date in result:
+#         assert 'date_id' in date
+#         assert 'day' in date
+#         assert 'day_name' in date
+#         assert 'day_of_week' in date
+#         assert 'month' in date
+#         assert 'month_name' in date
+#         assert 'quarter' in date
+#         assert 'year' in date
+#     from pprint import pprint
+#     pprint(result)
 
 def test_correct_output():
     result = format_dim_date(test_table)
-    from pprint import pprint
-    pprint(result)
     assert len(result) == 5
-    assert {'date_id': '2023-11-02',
-            'day': 2,
-            'day_name': 'Thursday',
-            'day_of_week': 3,
-            'month': 11,
-            'month_name': 'November',
-            'quarter': 3,
-            'year': 2023} in result
-
-    assert {'date_id': '2023-11-03',
-            'day': 3,
-            'day_name': 'Friday',
-            'day_of_week': 4,
-            'month': 11,
-            'month_name': 'November',
-            'quarter': 3,
-            'year': 2023} in result
-    assert {'date_id': '2023-10-30',
-            'day': 30,
-            'day_name': 'Monday',
-            'day_of_week': 0,
-            'month': 10,
-            'month_name': 'October',
-            'quarter': 3,
-            'year': 2023} in result
-    assert {'date_id': '2023-11-01',
-            'day': 1,
-            'day_name': 'Wednesday',
-            'day_of_week': 2,
-            'month': 11,
-            'month_name': 'November',
-            'quarter': 3,
-            'year': 2023} in result
-    assert {'date_id': '2023-11-05',
-            'day': 5,
-            'day_name': 'Sunday',
-            'day_of_week': 6,
-            'month': 11,
-            'month_name': 'November',
-            'quarter': 3,
-            'year': 2023} in result
+    assert ['2023-11-01', 2023, 11, 1, 2, 'Wednesday', 'November', 3] in result
+    assert ['2023-11-02', 2023, 11, 2, 3, 'Thursday', 'November', 3] in result
+    assert ['2023-11-05', 2023, 11, 5, 6, 'Sunday', 'November', 3] in result
+    assert ['2023-11-03', 2023, 11, 3, 4, 'Friday', 'November', 3] in result
+    assert ['2023-10-30', 2023, 10, 30, 0, 'Monday', 'October', 3] in result
 
 
 def test_KeyError_happend_when_wrong_table_name(caplog):

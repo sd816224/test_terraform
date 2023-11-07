@@ -32,32 +32,22 @@ test_table = {
 }
 
 
-def test_output_rows_has_correct_key_names():
-    result = format_dim_design(test_table)
-    for row in result:
-        assert 'design_id' in row
-        assert 'design_name' in row
-        assert 'file_location' in row
-        assert 'file_name' in row
-        assert len(row) == 4
+# def test_output_rows_has_correct_key_names():
+#     result = format_dim_design(test_table)
+#     for row in result:
+#         assert 'design_id' in row
+#         assert 'design_name' in row
+#         assert 'file_location' in row
+#         assert 'file_name' in row
+#         assert len(row) == 4
 
 
 def test_correct_output():
     result = format_dim_design(test_table)
     assert len(result) == 3
-    assert {'design_id': 1,
-            'design_name': 'leee-design',
-            'file_location': '/hello/here',
-            'file_name': 'test_file.jpg'} in result
-
-    assert {'design_id': 2,
-            'design_name': 'sam-design',
-            'file_location': '/hello/here/sam',
-            'file_name': 'test_file2.jpg'} in result
-    assert {'design_id': 3,
-            'design_name': 'yoman-design',
-            'file_location': '/hello/here/yoman',
-            'file_name': 'test_file3.jpg'} in result
+    assert [1, 'leee-design', '/hello/here', 'test_file.jpg'] in result
+    assert [2, 'sam-design', '/hello/here/sam', 'test_file2.jpg'] in result
+    assert [3, 'yoman-design', '/hello/here/yoman', 'test_file3.jpg'] in result
 
 
 def test_KeyError_happend_when_wrong_table_name(caplog):
