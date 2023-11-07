@@ -15,13 +15,7 @@ logger.setLevel(logging.INFO)
 def lambda_handler(event, context):
     bucket_name = "nc-de-project-transformed-data-20231102173127140100000001"
 
-    # 1. read_s3_json(event)
-    # 2. select a function to do the formatting based on table_name
-    # 3. turn formatted data into data frame and then parquet as temp
-    # 4. Write to s3
-
     table_name = get_table_name(event)
-
     data = read_s3_json(event)
 
     transformed_data = None
@@ -61,10 +55,52 @@ def lambda_handler(event, context):
             write_file_to_s3(bucket_name, OLAP_table_name, parquet_buffer)
 
 
+# pavs ultra superior semi-dry solid stool solution:
+
+# table_data_formatters = {
+#     "address": ("dim_location", format_dim_location),
+#     "staff": ("dim_staff", format_dim_staff),
+#     "design": ("dim_design", format_dim_design),
+#     "currency": ("dim_currency", format_dim_currency),
+#     "counterparty": ("dim_counterparty", format_dim_counterparty),
+#     "sales_order": [("dim_date", format_dim_date), ("fact_sales_order", format_fact_sales_order)],
+# }
+
+# if table_name in table_data_formatters:
+#     mappings = table_data_formatters[table_name]
+
+#     if table_name == "sales_order":
+#         for olap_table, formatter in mappings:
+#             transformed_data = formatter(data)
+#             parquet_buffer = create_parquet_buffer(transformed_data)
+#             write_file_to_s3(bucket_name, olap_table, parquet_buffer)
+#     else:
+#         olap_table, formatter = mappings
+#         transformed_data = formatter(data)
+#         parquet_buffer = create_parquet_buffer(transformed_data)
+#         write_file_to_s3(bucket_name, olap_table, parquet_buffer)
+# else:
+#     logger.warning("Unrecognized JSON data received.")
+
+
 def get_table_name(event):
-    """"""
+    """Extract table name that the incoming JSON data belongs to"""
     table_name = event["Records"][0]["s3"]["object"]["key"].split("/")[0]
     return table_name
+
+
+def create_parquet_buffer(formatted_data):
+    """
+    Write table formatted data as parquet to an
+    in-memory buffer before uploading it to s3
+    """
+    try:
+        df = pd.DataFrame(formatted_data)
+        parquet_buffer = io.BytesIO()
+        df.to_parquet(parquet_buffer)
+        return parquet_buffer
+    except Exception as e:
+        logging.error(f"Error creating parquet buffer: {e}")
 
 
 def read_s3_json(event):
@@ -89,7 +125,6 @@ def read_s3_json(event):
         RuntimeError: An unexpected error occurred in execution. Other errors
         result in an informative log message.
     """
-
     try:
         s3_bucket_name, s3_object_name = get_object_path(event["Records"])
         logger.info(f"Bucket is {s3_bucket_name}")
@@ -139,23 +174,8 @@ class InvalidFileTypeError(Exception):
     pass
 
 
-def create_parquet_buffer(formatted_data):
-    """
-    Write table data as parquet to an
-    in-memory buffer before uploading it to s3
-    """
-    # create a dataframe
-    df = pd.DataFrame(formatted_data)
-    # create in-memory binary stream
-    parquet_buffer = io.BytesIO()
-    # write parquet to the stream
-    df.to_parquet(parquet_buffer)
-    # re-set pointer to the beggining of the buffer if .read() is used
-    # parquet_buffer.seek(0)
-    return parquet_buffer
-
-
 def write_file_to_s3(bucket_name, table_name, parquet_buffer):
+    """Write parquet file to transfomed data bucket"""
     client = boto3.client("s3")
     date = dt.now()
     year = date.year
