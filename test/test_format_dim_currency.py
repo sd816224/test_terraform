@@ -1,6 +1,6 @@
-from src.transformation_lambda.format_dim_currency import format_dim_currency
-import pytest
 import logging
+import pytest
+from src.transformation_lambda.format_dim_currency import format_dim_currency
 
 
 test_currency = {
@@ -26,28 +26,21 @@ test_currency = {
 }
 
 
-def test_output_rows_has_correct_key_names():
-    result = format_dim_currency(test_currency)
-    for row in result:
-        assert 'currency_id' in row
-        assert 'currency_code' in row
-        assert 'currency_name' in row
-        assert len(row) == 3
+# def test_output_rows_has_correct_key_names():
+#     result = format_dim_currency(test_currency)
+#     for row in result:
+#         assert 'currency_id' in row
+#         assert 'currency_code' in row
+#         assert 'currency_name' in row
+#         assert len(row) == 3
 
 
 def test_correct_output():
     result = format_dim_currency(test_currency)
     assert len(result) == 3
-    assert {'currency_id': 1,
-            'currency_code': 'GBP',
-            'currency_name': 'Pound Sterling'} in result
-
-    assert {'currency_id': 2,
-            'currency_code': 'USD',
-            'currency_name': 'United States dollar'} in result
-    assert {'currency_id': 3,
-            'currency_code': 'EUR',
-            'currency_name': 'Euros'} in result
+    assert [1, 'GBP', 'Pound Sterling'] in result
+    assert [2, 'USD', 'United States dollar'] in result
+    assert [3, 'EUR', 'Euros'] in result
 
 
 def test_KeyError_happend_when_wrong_table_name(caplog):

@@ -44,8 +44,15 @@ def format_dim_currency(currency_table):
                 'currency_code': row['currency_code'],
                 'currency_name': currency_name[row['currency_code']]
             })
-        print(all_currencies)
-        return all_currencies
+
+        list_of_list = []
+        for row in all_currencies:
+            list_of_list.append([
+                row['currency_id'],
+                row['currency_code'],
+                row['currency_name'],
+            ])
+        return list_of_list
 
     except KeyError as k:
         logger.error(f'Error retrieving data, {k}')
