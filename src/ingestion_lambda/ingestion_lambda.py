@@ -13,9 +13,7 @@ logger.setLevel(logging.INFO)
 
 def lambda_handler(event, context):
     invocation_time = dt.now()
-    bucket_name = (
-        "nc-de-project-ingested-data-bucket-20231102173127149000000003"  # noqa E501
-    )
+    bucket_name = "nc-de-josh-test-bucket"  # noqa E501
     secret_name = "totesys-production"
 
     try:
@@ -206,12 +204,19 @@ def get_data(conn, last_upload):
                             """
         )
         list_table_names = list(table_names)
+        list_table_names.append(["all_addresses"])
         list_table_names.remove(["_prisma_migrations"])
         for table in list_table_names:
-            if table[0] == "address" or table[0] == "department":
+            if table[0] == "department":
                 content = conn.run(
                     f"""
                                     SELECT * FROM {table[0]}
+                                    """
+                )
+            elif table[0] == "all_addresses":
+                content = conn.run(
+                    """
+                                    SELECT * FROM address
                                     """
                 )
             # get updated content from other tables
@@ -225,14 +230,24 @@ def get_data(conn, last_upload):
                 )
 
             # get all column names from the table
-            columns = conn.run(
-                f"""
-                                SELECT column_name
-                                FROM information_schema.columns
-                                WHERE table_schema='public'
-                                AND table_name= '{table[0]}'
-                                """
-            )
+            if table[0] == "all_addresses":
+                columns = conn.run(
+                    """
+                                    SELECT column_name
+                                    FROM information_schema.columns
+                                    WHERE table_schema='public'
+                                    AND table_name= 'address'
+                                    """
+                )
+            else:
+                columns = conn.run(
+                    f"""
+                                    SELECT column_name
+                                    FROM information_schema.columns
+                                    WHERE table_schema='public'
+                                    AND table_name= '{table[0]}'
+                                    """
+                )
             column_names = [name[0] for name in columns]
             # integrate column names and conn to the dataframe
             df = pd.DataFrame(content, columns=column_names)
@@ -241,7 +256,7 @@ def get_data(conn, last_upload):
             if len(back_to_list) != 0:
                 updated_content[table[0]] = back_to_list
         conn.close()
-        if list(updated_content.keys()) == ["department", "address"]:
+        if list(updated_content.keys()) == ["department", "all_addresses"]:
             updated_content = {}
 
         logger.info("Updated JSON content has been retrieved.")
@@ -285,44 +300,45 @@ def write_file(bucket_name, json_data, timestamp=dt(2020, 1, 1, 0, 0, 0)):
             raise Exception("Updated data type invalid. Dict expected.")
 
         for table in json_data:
-            file_name = f"{table}/{year}/{month}/{day}/data-{time}.json"
+            if table != "all_addresses":
+                file_name = f"{table}/{year}/{month}/{day}/data-{time}.json"
 
-            if table == "staff":
-                response = client.put_object(
-                    Body=json.dumps(
-                        {
-                            table: json_data[table],
-                            "department": json_data["department"],
-                        }  # noqa E501
-                    ),
-                    Bucket=bucket_name,
-                    Key=file_name,
-                )  # noqa E501
-                if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
-                    logger.info(f"Success. File {file_name} saved.")
+                if table == "staff":
+                    response = client.put_object(
+                        Body=json.dumps(
+                            {
+                                table: json_data[table],
+                                "department": json_data["department"],
+                            }  # noqa E501
+                        ),
+                        Bucket=bucket_name,
+                        Key=file_name,
+                    )  # noqa E501
+                    if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
+                        logger.info(f"Success. File {file_name} saved.")
 
-            elif table == "counterparty":
-                response = client.put_object(
-                    Body=json.dumps(
-                        {
-                            table: json_data[table],
-                            "address": json_data["address"],
-                        }  # noqa E501
-                    ),
-                    Bucket=bucket_name,
-                    Key=file_name,
-                )  # noqa E501
-                if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
-                    logger.info(f"Success. File {file_name} saved.")
+                elif table == "counterparty":
+                    response = client.put_object(
+                        Body=json.dumps(
+                            {
+                                table: json_data[table],
+                                "address": json_data["all_addresses"],
+                            }  # noqa E501
+                        ),
+                        Bucket=bucket_name,
+                        Key=file_name,
+                    )  # noqa E501
+                    if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
+                        logger.info(f"Success. File {file_name} saved.")
 
-            else:
-                response = client.put_object(
-                    Body=json.dumps({table: json_data[table]}),
-                    Bucket=bucket_name,
-                    Key=file_name,
-                )  # noqa E501
-                if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
-                    logger.info(f"Success. File {file_name} saved.")
+                else:
+                    response = client.put_object(
+                        Body=json.dumps({table: json_data[table]}),
+                        Bucket=bucket_name,
+                        Key=file_name,
+                    )  # noqa E501
+                    if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
+                        logger.info(f"Success. File {file_name} saved.")
 
         datefileresponse = client.put_object(
             Body=last_successful_timestamp,
