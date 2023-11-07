@@ -26,9 +26,9 @@ def format_fact_sales_order(sales_order_json):
     -------
         A list of lists.
     """
-    json = sales_order_json["sales_order"]
     sales_order_parquet = []
     try:
+        json = sales_order_json["sales_order"]
         for sale in json:
             insert = True
             created_date = sale["created_at"][:10]
