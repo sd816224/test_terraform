@@ -1,4 +1,4 @@
-from src.transformation_lambda.format_dim_staff import format_dim_staff
+from src.transformation_lambda.transformation_lambda import format_dim_staff
 import logging
 
 

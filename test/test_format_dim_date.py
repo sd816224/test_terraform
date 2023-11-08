@@ -1,4 +1,4 @@
-from src.transformation_lambda.format_dim_date import format_dim_date
+from src.transformation_lambda.transformation_lambda import format_dim_date
 import pytest
 import logging
 
@@ -45,7 +45,7 @@ test_table = {
             "agreed_delivery_date": "2023-11-01",
             "agreed_payment_date": "2023-11-05",
             "agreed_delivery_location_id": 17,
-        }
+        },
     ]
 }
 
@@ -64,21 +64,22 @@ test_table = {
 #     from pprint import pprint
 #     pprint(result)
 
+
 def test_correct_output():
     result = format_dim_date(test_table)
     assert len(result) == 5
-    assert ['2023-11-01', 2023, 11, 1, 2, 'Wednesday', 'November', 3] in result
-    assert ['2023-11-02', 2023, 11, 2, 3, 'Thursday', 'November', 3] in result
-    assert ['2023-11-05', 2023, 11, 5, 6, 'Sunday', 'November', 3] in result
-    assert ['2023-11-03', 2023, 11, 3, 4, 'Friday', 'November', 3] in result
-    assert ['2023-10-30', 2023, 10, 30, 0, 'Monday', 'October', 3] in result
+    assert ["2023-11-01", 2023, 11, 1, 2, "Wednesday", "November", 3] in result
+    assert ["2023-11-02", 2023, 11, 2, 3, "Thursday", "November", 3] in result
+    assert ["2023-11-05", 2023, 11, 5, 6, "Sunday", "November", 3] in result
+    assert ["2023-11-03", 2023, 11, 3, 4, "Friday", "November", 3] in result
+    assert ["2023-10-30", 2023, 10, 30, 0, "Monday", "October", 3] in result
 
 
 def test_KeyError_happend_when_wrong_table_name(caplog):
-    wrong_table = {'staff': test_table['sales_order']}
+    wrong_table = {"staff": test_table["sales_order"]}
     with caplog.at_level(logging.ERROR):
         format_dim_date(wrong_table)
-        assert 'Error retrieving data' in caplog.text
+        assert "Error retrieving data" in caplog.text
 
 
 def test_RuntimeError_happend_when_wrong_input():

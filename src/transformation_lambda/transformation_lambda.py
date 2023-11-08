@@ -3,7 +3,7 @@ import io
 import logging
 import json
 import pandas as pd
-import datetime as dt
+from datetime import datetime as dt
 from botocore.exceptions import ClientError
 
 
@@ -18,69 +18,50 @@ def lambda_handler(event, context):
     table_name = get_table_name(event)
     data = read_s3_json(event)
 
-    transformed_data = None
-    OLAP_table_name = None
+    try:
+        transformed_data = None
+        OLAP_table_name = None
 
-    if table_name == "address":
-        transformed_data = format_dim_location(data)
-        OLAP_table_name = "dim_location"
-    elif table_name == "staff":
-        transformed_data = format_dim_staff(data)
-        OLAP_table_name = "dim_staff"
-    elif table_name == "design":
-        transformed_data = format_dim_design(data)
-        OLAP_table_name = "dim_design"
-    elif table_name == "currency":
-        transformed_data = format_dim_currency(data)
-        OLAP_table_name = "dim_currency"
-    elif table_name == "counterparty":
-        transformed_data = format_dim_counterparty(data)
-        OLAP_table_name = "dim_counterparty"
-    elif table_name == "sales_order":
-        transformed_data = {
-            "date": format_dim_date(data),
-            "sales_order": format_fact_sales_order(data),
-        }
+        if table_name == "address":
+            transformed_data = format_dim_location(data)
+            OLAP_table_name = "dim_location"
+        elif table_name == "staff":
+            transformed_data = format_dim_staff(data)
+            OLAP_table_name = "dim_staff"
+        elif table_name == "design":
+            transformed_data = format_dim_design(data)
+            OLAP_table_name = "dim_design"
+        elif table_name == "currency":
+            transformed_data = format_dim_currency(data)
+            OLAP_table_name = "dim_currency"
+        elif table_name == "counterparty":
+            transformed_data = format_dim_counterparty(data)
+            OLAP_table_name = "dim_counterparty"
+        elif table_name == "sales_order":
+            transformed_data = {
+                "date": format_dim_date(data),
+                "sales_order": format_fact_sales_order(data),
+            }
 
-    if transformed_data:
-        if isinstance(transformed_data, dict):
-            date_parquet_buffer = create_parquet_buffer(transformed_data["date"])
-            write_file_to_s3(bucket_name, "dim_date", date_parquet_buffer)
+        if transformed_data:
+            if isinstance(transformed_data, dict):
+                dp_buffer = create_parquet_buffer(transformed_data["date"])
+                write_file_to_s3(bucket_name, "dim_date", dp_buffer)
 
-            sales_parquet_buffer = create_parquet_buffer(transformed_data["sales_oder"])
-            write_file_to_s3(bucket_name, "fact_sales_order", sales_parquet_buffer)
+                sp_buffer = create_parquet_buffer(
+                    transformed_data["sales_order"]
+                )  # noqa E501
+                write_file_to_s3(bucket_name, "fact_sales_order", sp_buffer)
 
+            else:
+                parquet_buffer = create_parquet_buffer(transformed_data)
+                write_file_to_s3(bucket_name, OLAP_table_name, parquet_buffer)
         else:
-            parquet_buffer = create_parquet_buffer(transformed_data)
-            write_file_to_s3(bucket_name, OLAP_table_name, parquet_buffer)
-
-
-# pavs ultra superior semi-dry solid stool solution:
-
-# table_data_formatters = {
-#     "address": ("dim_location", format_dim_location),
-#     "staff": ("dim_staff", format_dim_staff),
-#     "design": ("dim_design", format_dim_design),
-#     "currency": ("dim_currency", format_dim_currency),
-#     "counterparty": ("dim_counterparty", format_dim_counterparty),
-#     "sales_order": [("dim_date", format_dim_date), ("fact_sales_order", format_fact_sales_order)],
-# }
-
-# if table_name in table_data_formatters:
-#     mappings = table_data_formatters[table_name]
-
-#     if table_name == "sales_order":
-#         for olap_table, formatter in mappings:
-#             transformed_data = formatter(data)
-#             parquet_buffer = create_parquet_buffer(transformed_data)
-#             write_file_to_s3(bucket_name, olap_table, parquet_buffer)
-#     else:
-#         olap_table, formatter = mappings
-#         transformed_data = formatter(data)
-#         parquet_buffer = create_parquet_buffer(transformed_data)
-#         write_file_to_s3(bucket_name, olap_table, parquet_buffer)
-# else:
-#     logger.warning("Unrecognized JSON data received.")
+            logger.info(
+                f"{table_name} JSON file received. No transformation required."
+            )  # noqa E501
+    except Exception as e:
+        logger.error(f"Error whilst formatting JSON.{e}")
 
 
 def get_table_name(event):
@@ -148,7 +129,7 @@ def read_s3_json(event):
         else:
             raise
     except UnicodeError:
-        logger.error(f"File {s3_object_name} is not a valid json file")  ### ?????
+        logger.error(f"File {s3_object_name} is not a valid json file")
     except InvalidFileTypeError:
         logger.error(f"File {s3_object_name} is not a valid json file")
     except Exception as e:
@@ -158,7 +139,10 @@ def read_s3_json(event):
 
 def get_object_path(records):
     """Extracts bucket and object references from Records field of event."""
-    return records[0]["s3"]["bucket"]["name"], records[0]["s3"]["object"]["key"]
+    return (
+        records[0]["s3"]["bucket"]["name"],
+        records[0]["s3"]["object"]["key"],
+    )  # noqa E501
 
 
 def get_content_from_file(client, bucket, object_key):
@@ -166,12 +150,6 @@ def get_content_from_file(client, bucket, object_key):
     data = client.get_object(Bucket=bucket, Key=object_key)
     contents = data["Body"].read()
     return contents.decode("utf-8")
-
-
-class InvalidFileTypeError(Exception):
-    """Traps error where file type is not json."""
-
-    pass
 
 
 def write_file_to_s3(bucket_name, table_name, parquet_buffer):
@@ -200,8 +178,52 @@ def write_file_to_s3(bucket_name, table_name, parquet_buffer):
         logger.error(e)
 
 
-def format_dim_location():
-    pass
+def format_dim_location(address_json):
+    """
+    Formats the address data ready to be inserted
+    into the dim_location table.
+
+    Parameters
+    ----------
+        address_json: JSON, required.
+            The JSON file to be transformed into parquet.
+
+    Raises
+    ------
+
+    KeyError:
+        If the address key is missing.
+        If any of the columns are missing.
+
+    Returns
+    -------
+        A list of lists.
+    """
+    dim_location = []
+    try:
+        addresses = address_json["address"]
+        for address in addresses:
+            insert = True
+            row = [
+                address["address_id"],
+                address["address_line_1"],
+                address["address_line_2"],
+                address["district"],
+                address["city"],
+                address["postal_code"],
+                address["country"],
+                address["phone"],
+            ]
+            for list in dim_location:
+                if list == row:
+                    insert = False
+            if insert is True:
+                dim_location.append(row)
+        return dim_location
+    except KeyError as ke:
+        logger.error(f"KeyError: missing key {ke}.")
+    except Exception as e:
+        logger.error(f"Unexpected Error: {e}")
 
 
 def format_dim_staff(staff_data):
@@ -415,22 +437,22 @@ def format_dim_counterparty(table):
         for cp in updpated_cp:
             # searching address from address_look_up_table
             address = [
-                r for r in address_lookup if r["address_id"] == cp["legal_address_id"]
-            ][
-                0
-            ]  # noqa E501
+                r
+                for r in address_lookup
+                if r["address_id"] == cp["legal_address_id"]  # noqa E501
+            ][0]
             # formating the dim table
             cp_dict.append(
                 {
-                    "counterparty_id": cp["counterparty_id"],
-                    "counterparty_legal_name": cp["counterparty_legal_name"],
-                    "counterparty_legal_address_line_1": address["address_line_1"],
-                    "counterparty_legal_address_line_2": address["address_line_2"],
-                    "counterparty_legal_district": address["district"],
-                    "counterparty_legal_city": address["city"],
-                    "counterparty_legal_postal_code": address["postal_code"],
-                    "counterparty_legal_country": address["country"],
-                    "counterparty_legal_phone_number": address["phone"],
+                    "cp_id": cp["counterparty_id"],
+                    "cp_legal_name": cp["counterparty_legal_name"],
+                    "cp_legal_address_line_1": address["address_line_1"],
+                    "cp_legal_address_line_2": address["address_line_2"],
+                    "cp_legal_district": address["district"],
+                    "cp_legal_city": address["city"],
+                    "cp_legal_postal_code": address["postal_code"],
+                    "cp_legal_country": address["country"],
+                    "cp_legal_phone_number": address["phone"],
                 }
             )
 
@@ -438,15 +460,15 @@ def format_dim_counterparty(table):
             for row in cp_dict:
                 list_of_lists.append(
                     [
-                        row["counterparty_id"],
-                        row["counterparty_legal_name"],
-                        row["counterparty_legal_address_line_1"],
-                        row["counterparty_legal_address_line_1"],
-                        row["counterparty_legal_district"],
-                        row["counterparty_legal_city"],
-                        row["counterparty_legal_postal_code"],
-                        row["counterparty_legal_country"],
-                        row["counterparty_legal_phone_number"],
+                        row["cp_id"],
+                        row["cp_legal_name"],
+                        row["cp_legal_address_line_1"],
+                        row["cp_legal_address_line_1"],
+                        row["cp_legal_district"],
+                        row["cp_legal_city"],
+                        row["cp_legal_postal_code"],
+                        row["cp_legal_country"],
+                        row["cp_legal_phone_number"],
                     ]
                 )
 
@@ -569,9 +591,9 @@ def format_fact_sales_order(sales_order_json):
     -------
         A list of lists.
     """
-    json = sales_order_json["sales_order"]
     sales_order_parquet = []
     try:
+        json = sales_order_json["sales_order"]
         for sale in json:
             insert = True
             created_date = sale["created_at"][:10]
@@ -601,12 +623,12 @@ def format_fact_sales_order(sales_order_json):
                 sales_order_parquet.append(row)
         return sales_order_parquet
     except KeyError as ke:
-        tb = traceback.extract_tb(ke.__traceback__)
-        line_number = tb[-1].lineno
-        logger.error(
-            f"KeyError: missing key {ke}.\n Please check file for errors at line {line_number}.\n Continuing with rest of JSON file."  # noqa E501
-        )
+        logger.error(f"KeyError: missing key {ke}.")
     except Exception as e:
-        tb = traceback.extract_tb(e.__traceback__)
-        line_number = tb[-1].lineno
-        logger.error(f"Unexpected Error: {e} at line {line_number}")
+        logger.error(f"Unexpected Error: {e}")
+
+
+class InvalidFileTypeError(Exception):
+    """Traps error where file type is not json."""
+
+    pass
