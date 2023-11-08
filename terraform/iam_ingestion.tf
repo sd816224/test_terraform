@@ -65,13 +65,13 @@ data "aws_iam_policy_document" "ingestion_lambda_s3_code_bucket_document" {
 data "aws_iam_policy_document" "ingestion_lambda_s3_ingestion_bucket_document" {
   statement {
     effect = "Allow"
-
     actions = [
-      "s3:GetObject",
-      "s3-object-lambda:GetObject",
-      "s3:PutObject"
-    ]
-
+          "s3:GetObject",
+          "s3-object-lambda:GetObject",
+          "s3-object-lambda:PutObject",
+          "s3:PutObject",
+          "s3:ListBucket" #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        ]
     resources = [
       "${aws_s3_bucket.ingestion_data_bucket.arn}/*",
       "${aws_s3_bucket.ingestion_data_bucket.arn}",
