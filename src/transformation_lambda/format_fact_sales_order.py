@@ -1,5 +1,4 @@
 import logging
-import traceback
 
 logging.basicConfig()
 logger = logging.getLogger("transformation_lambda")
@@ -27,9 +26,9 @@ def format_fact_sales_order(sales_order_json):
     -------
         A list of lists.
     """
-    json = sales_order_json["sales_order"]
     sales_order_parquet = []
     try:
+        json = sales_order_json["sales_order"]
         for sale in json:
             insert = True
             created_date = sale["created_at"][:10]
@@ -59,12 +58,6 @@ def format_fact_sales_order(sales_order_json):
                 sales_order_parquet.append(row)
         return sales_order_parquet
     except KeyError as ke:
-        tb = traceback.extract_tb(ke.__traceback__)
-        line_number = tb[-1].lineno
-        logger.error(
-            f"KeyError: missing key {ke}.\n Please check file for errors at line {line_number}.\n Continuing with rest of JSON file."  # noqa E501
-        )
+        logger.error(f"KeyError: missing key {ke}.")
     except Exception as e:
-        tb = traceback.extract_tb(e.__traceback__)
-        line_number = tb[-1].lineno
-        logger.error(f"Unexpected Error: {e} at line {line_number}")
+        logger.error(f"Unexpected Error: {e}")

@@ -363,7 +363,4 @@ def test_should_log_a_warning_if_key_is_missing(caplog):
     with caplog.at_level(logging.ERROR):
         json = {"sales_order": [{"spam": "eggs"}]}
         format_fact_sales_order(json)
-        assert (
-            "KeyError: missing key 'created_at'.\n Please check file for errors at line 15.\n Continuing with rest of JSON file"  # noqa E501
-            in caplog.text
-        )
+        assert "KeyError: missing key 'created_at'." in caplog.text
