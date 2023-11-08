@@ -14,7 +14,7 @@ logger.setLevel(logging.INFO)
 def lambda_handler(event, context):
     invocation_time = dt.now()
     bucket_name = (
-        "nc-de-project-ingested-data-bucket-20231102173127149000000003"  # noqa E501
+        "nc-de-project-ingested-data-bucket-20231108101054774200000001"  # noqa E501
     )
     secret_name = "totesys-production"
 
