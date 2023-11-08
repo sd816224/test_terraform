@@ -26,7 +26,7 @@ def get_parquet(bucket_name, file_name):
     -------
         a list of tuples representing the values of each row.
 
-     
+
     """
     client = boto3.client("s3")
     try:

@@ -1,6 +1,5 @@
 from src.loading_lambda.get_data_util import get_parquet
 import logging
-from unittest.mock import patch
 from moto import mock_s3
 import boto3
 import pytest
@@ -195,10 +194,8 @@ class TestGetParquet:
                 ),
             ]
 
-
     def test_logs_ClientError_if_passed_a_bad_name(self, caplog):
         with caplog.at_level(logging.INFO):
-             
             s3 = boto3.client("s3")
             s3.create_bucket(
                 Bucket="test_bucket",
@@ -207,23 +204,26 @@ class TestGetParquet:
 
             with open("mock_parquet/data-144511.parquet", mode="rb") as pq:
                 s3.put_object(
-                    Body=pq.read(), Bucket="test_bucket", Key="data-144511.parquet"
+                    Body=pq.read(), Bucket="test_bucket", Key="data-144511.parquet"  # noqa E501
                 )
             get_parquet("MyBucket", "data-144511.parquet")
             assert "The specified bucket does not exist" in caplog.text
-        
+
     def test_logs_ClientError_if_passed_a_bad_key(self, caplog):
         with caplog.at_level(logging.INFO):
-                
             s3 = boto3.client("s3")
             s3.create_bucket(
                 Bucket="test_bucket",
-                CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
-            )  # noqa E501
+                CreateBucketConfiguration={
+                    "LocationConstraint": "eu-west-2"
+                },  # noqa E501
+            )
 
             with open("mock_parquet/data-144511.parquet", mode="rb") as pq:
                 s3.put_object(
-                    Body=pq.read(), Bucket="test_bucket", Key="data-144511.parquet"
+                    Body=pq.read(),
+                    Bucket="test_bucket",
+                    Key="data-144511.parquet",  # noqa E501
                 )
             get_parquet("test_bucket", "spam-eggs")
             assert "The specified key does not exist" in caplog.text
