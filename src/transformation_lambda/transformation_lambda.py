@@ -168,12 +168,6 @@ def get_content_from_file(client, bucket, object_key):
     return contents.decode("utf-8")
 
 
-class InvalidFileTypeError(Exception):
-    """Traps error where file type is not json."""
-
-    pass
-
-
 def write_file_to_s3(bucket_name, table_name, parquet_buffer):
     """Write parquet file to transfomed data bucket"""
     client = boto3.client("s3")
@@ -200,8 +194,52 @@ def write_file_to_s3(bucket_name, table_name, parquet_buffer):
         logger.error(e)
 
 
-def format_dim_location():
-    pass
+def format_dim_location(address_json):
+    """
+    Formats the address data ready to be inserted
+    into the dim_location table.
+
+    Parameters
+    ----------
+        address_json: JSON, required.
+            The JSON file to be transformed into parquet.
+
+    Raises
+    ------
+
+    KeyError:
+        If the address key is missing.
+        If any of the columns are missing.
+
+    Returns
+    -------
+        A list of lists.
+    """
+    dim_location = []
+    try:
+        addresses = address_json["address"]
+        for address in addresses:
+            insert = True
+            row = [
+                address["address_id"],
+                address["address_line_1"],
+                address["address_line_2"],
+                address["district"],
+                address["city"],
+                address["postal_code"],
+                address["country"],
+                address["phone"],
+            ]
+            for list in dim_location:
+                if list == row:
+                    insert = False
+            if insert is True:
+                dim_location.append(row)
+        return dim_location
+    except KeyError as ke:
+        logger.error(f"KeyError: missing key {ke}.")
+    except Exception as e:
+        logger.error(f"Unexpected Error: {e}")
 
 
 def format_dim_staff(staff_data):
@@ -569,9 +607,9 @@ def format_fact_sales_order(sales_order_json):
     -------
         A list of lists.
     """
-    json = sales_order_json["sales_order"]
     sales_order_parquet = []
     try:
+        json = sales_order_json["sales_order"]
         for sale in json:
             insert = True
             created_date = sale["created_at"][:10]
@@ -601,12 +639,12 @@ def format_fact_sales_order(sales_order_json):
                 sales_order_parquet.append(row)
         return sales_order_parquet
     except KeyError as ke:
-        tb = traceback.extract_tb(ke.__traceback__)
-        line_number = tb[-1].lineno
-        logger.error(
-            f"KeyError: missing key {ke}.\n Please check file for errors at line {line_number}.\n Continuing with rest of JSON file."  # noqa E501
-        )
+        logger.error(f"KeyError: missing key {ke}.")
     except Exception as e:
-        tb = traceback.extract_tb(e.__traceback__)
-        line_number = tb[-1].lineno
-        logger.error(f"Unexpected Error: {e} at line {line_number}")
+        logger.error(f"Unexpected Error: {e}")
+
+
+class InvalidFileTypeError(Exception):
+    """Traps error where file type is not json."""
+
+    pass
