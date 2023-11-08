@@ -9,6 +9,45 @@ logger = logging.getLogger("loading_lambda")
 logger.setLevel(logging.INFO)
 
 
+def get_column_names(conn, table_name):
+    """
+    Gets all columns name of given the table
+
+    Parameters
+    ----------
+    conn: database connection instance
+        type: pg8000 connect object
+    table_name: table name
+        type: str
+
+    Returns
+    -------
+    Will return a string of column names:
+        "(column, column, column)"
+    """
+
+    try:
+        columns = conn.run(
+            f"""
+                            SELECT column_name
+                            FROM information_schema.columns
+                            WHERE table_name= '{table_name}'
+                            """
+        )
+
+        result = str(tuple([name[0] for name in columns]))
+        if len(result) <= 2:
+            logger.error('Incorrect table name has been provided.')
+        elif len(result) > 2:
+            logger.info(f'Column names returned are: {result}')
+            return result
+    except ClientError as e:
+        logger.error(f" {e.response['Error']['Message']}")
+    except Exception as exc:
+        logger.error(exc)
+        raise exc
+
+
 def get_credentials(secret_name):
     """
     Gets credentials from the AWS secrets manager.
@@ -52,7 +91,7 @@ def get_credentials(secret_name):
             "password": secret["password"],
             "database": secret["database"],
         }
-        logger.info("connection parameters returned")
+        logger.info("Connection parameters returned.")
         return connection_params
 
     except ClientError as e:
@@ -110,43 +149,4 @@ def get_connection(database_credentials):
             "An error has occurred when \
             attempting to connect to the database."
         )
-        raise exc
-
-
-def get_column_names(conn, table_name):
-    """
-    Gets all columns name of given the table
-
-    Parameters
-    ----------
-    conn: database connection instance
-        type: pg8000 connect object
-    table_name: table name
-        type: str
-
-    Returns
-    -------
-    Will return a string of column names:
-        "(column, column, column)"
-    """
-
-    try:
-        columns = conn.run(
-            f"""
-                            SELECT column_name
-                            FROM information_schema.columns
-                            WHERE table_name= '{table_name}'
-                            """
-        )
-
-        result = str(tuple([name[0] for name in columns]))
-        if len(result) <= 2:
-            logger.error('Incorrect table name has been provided.')
-        elif len(result) > 2:
-            logger.info(f'Column names returned are: {result}')
-            return result
-    except ClientError as e:
-        logger.error(f" {e.response['Error']['Message']}")
-    except Exception as exc:
-        logger.error(exc)
         raise exc
