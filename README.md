@@ -17,3 +17,6 @@
 ## PSA, to add requirements to the requirements.txt file run:
 
 `make add-requirements`
+
+## need write backend destination
+## change code bucket name
