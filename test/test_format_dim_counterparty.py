@@ -1,42 +1,47 @@
-from src.transformation_lambda.format_dim_counterparty import format_dim_counterparty # noqa E501
+from src.transformation_lambda.transformation_lambda import (
+    format_dim_counterparty,
+)  # noqa E501
 import pytest
 import logging
 
 test_table = {
-            "address": [{
-                "address_id": 15,
-                "address_line_1": "605 Haskell Trafficway",
-                "address_line_2": "Axel Freeway",
-                "district": None,
-                "city": "East Bobbie",
-                "postal_code": "88253-4257",
-                "country": "Heard Island and McDonald Islands",
-                "phone": "9687 937447",
-                "created_at": "2022-11-03T14:20:49.962",
-                "last_updated": "2022-11-03T14:20:49.962"
-            }, {
-                "address_id": 2,
-                "address_line_1": "179 Alexie Cliffs",
-                "address_line_2": None,
-                "district": None,
-                "city": "Aliso Viejo",
-                "postal_code": "99305-7380",
-                "country": "San Marino",
-                "phone": "9621 880720",
-                "created_at": "2022-11-03T14:20:49.962",
-                "last_updated": "2022-11-03T14:20:49.962"
-            }
-            ],
-
-            "counterparty": [{
-                "counterparty_id": 1,
-                "counterparty_legal_name": "Fahey and Sons",
-                "legal_address_id": 15,
-                "commercial_contact": "Micheal Toy",
-                "delivery_contact": "Mrs. Lucy Runolfsdottir",
-                "created_at": "2022-11-03T14:20:51.563",
-                "last_updated": "2022-11-03T14:20:51.563"
-                }]
+    "address": [
+        {
+            "address_id": 15,
+            "address_line_1": "605 Haskell Trafficway",
+            "address_line_2": "Axel Freeway",
+            "district": None,
+            "city": "East Bobbie",
+            "postal_code": "88253-4257",
+            "country": "Heard Island and McDonald Islands",
+            "phone": "9687 937447",
+            "created_at": "2022-11-03T14:20:49.962",
+            "last_updated": "2022-11-03T14:20:49.962",
+        },
+        {
+            "address_id": 2,
+            "address_line_1": "179 Alexie Cliffs",
+            "address_line_2": None,
+            "district": None,
+            "city": "Aliso Viejo",
+            "postal_code": "99305-7380",
+            "country": "San Marino",
+            "phone": "9621 880720",
+            "created_at": "2022-11-03T14:20:49.962",
+            "last_updated": "2022-11-03T14:20:49.962",
+        },
+    ],
+    "counterparty": [
+        {
+            "counterparty_id": 1,
+            "counterparty_legal_name": "Fahey and Sons",
+            "legal_address_id": 15,
+            "commercial_contact": "Micheal Toy",
+            "delivery_contact": "Mrs. Lucy Runolfsdottir",
+            "created_at": "2022-11-03T14:20:51.563",
+            "last_updated": "2022-11-03T14:20:51.563",
+        }
+    ],
 }
 
 
@@ -60,22 +65,22 @@ def test_correct_output():
     assert len(result) == 1
     assert [
         1,
-        'Fahey and Sons',
-        '605 Haskell Trafficway',
-        '605 Haskell Trafficway',
+        "Fahey and Sons",
+        "605 Haskell Trafficway",
+        "605 Haskell Trafficway",
         None,
-        'East Bobbie',
-        '88253-4257',
-        'Heard Island and McDonald Islands',
-        '9687 937447'
-        ] in result
+        "East Bobbie",
+        "88253-4257",
+        "Heard Island and McDonald Islands",
+        "9687 937447",
+    ] in result
 
 
 def test_KeyError_happend_when_wrong_table_name(caplog):
-    wrong_table = {'staff': test_table['counterparty']}
+    wrong_table = {"staff": test_table["counterparty"]}
     with caplog.at_level(logging.ERROR):
         format_dim_counterparty(wrong_table)
-        assert 'Error retrieving data' in caplog.text
+        assert "Error retrieving data" in caplog.text
 
 
 def test_RuntimeError_happend_when_wrong_input():

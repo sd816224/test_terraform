@@ -1,4 +1,4 @@
-from src.transformation_lambda.format_dim_design import format_dim_design
+from src.transformation_lambda.transformation_lambda import format_dim_design
 import pytest
 import logging
 
@@ -8,26 +8,26 @@ test_table = {
             "design_id": 1,
             "created_at": "2023-10-30T08:27:09.957",
             "last_updated": "2023-10-30T08:27:09.957",
-            "design_name": 'leee-design',
-            "file_location": '/hello/here',
-            "file_name": 'test_file.jpg',
+            "design_name": "leee-design",
+            "file_location": "/hello/here",
+            "file_name": "test_file.jpg",
         },
         {
             "design_id": 2,
             "created_at": "2023-11-30T08:27:09.957",
             "last_updated": "2023-12-30T08:27:09.957",
-            "design_name": 'sam-design',
-            "file_location": '/hello/here/sam',
-            "file_name": 'test_file2.jpg',
+            "design_name": "sam-design",
+            "file_location": "/hello/here/sam",
+            "file_name": "test_file2.jpg",
         },
         {
             "design_id": 3,
             "created_at": "2023-05-30T08:27:09.957",
             "last_updated": "2023-06-30T08:27:09.957",
-            "design_name": 'yoman-design',
-            "file_location": '/hello/here/yoman',
-            "file_name": 'test_file3.jpg',
-        }
+            "design_name": "yoman-design",
+            "file_location": "/hello/here/yoman",
+            "file_name": "test_file3.jpg",
+        },
     ]
 }
 
@@ -45,16 +45,16 @@ test_table = {
 def test_correct_output():
     result = format_dim_design(test_table)
     assert len(result) == 3
-    assert [1, 'leee-design', '/hello/here', 'test_file.jpg'] in result
-    assert [2, 'sam-design', '/hello/here/sam', 'test_file2.jpg'] in result
-    assert [3, 'yoman-design', '/hello/here/yoman', 'test_file3.jpg'] in result
+    assert [1, "leee-design", "/hello/here", "test_file.jpg"] in result
+    assert [2, "sam-design", "/hello/here/sam", "test_file2.jpg"] in result
+    assert [3, "yoman-design", "/hello/here/yoman", "test_file3.jpg"] in result
 
 
 def test_KeyError_happend_when_wrong_table_name(caplog):
-    wrong_table = {'staff': test_table['design']}
+    wrong_table = {"staff": test_table["design"]}
     with caplog.at_level(logging.ERROR):
         format_dim_design(wrong_table)
-        assert 'Error retrieving data' in caplog.text
+        assert "Error retrieving data" in caplog.text
 
 
 def test_RuntimeError_happend_when_wrong_input():

@@ -1,4 +1,4 @@
-from src.transformation_lambda.format_fact_sales_order import (
+from src.transformation_lambda.transformation_lambda import (
     format_fact_sales_order,
 )  # noqa E501
 import logging

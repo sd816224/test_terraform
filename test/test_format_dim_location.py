@@ -1,4 +1,4 @@
-from src.transformation_lambda.format_dim_location import format_dim_location
+from src.transformation_lambda.transformation_lambda import format_dim_location
 import logging
 
 logger = logging.getLogger("TestLogger")
