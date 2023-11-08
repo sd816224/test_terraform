@@ -39,7 +39,7 @@ resource "aws_iam_policy" "cloudwatch_logs_policy_for_transformation_lambda" {
 }
 
 resource "aws_iam_policy" "transformation_lambda_s3_policy" {
-  name        = "ingestion_lambda_s3_policy"
+  name        = "transformation_lambda_s3_policy"
   description = "Allows reading from  ingested data bucket and writing to transformed data bucket"
   policy = jsonencode({
     Version = "2012-10-17",
