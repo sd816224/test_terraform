@@ -47,24 +47,30 @@ resource "aws_iam_policy" "transformation_lambda_s3_policy" {
       {
         Action = [
             "s3:PutObject",
+            "s3:GetObject",
             "s3-object-lambda:GetObject",
             "s3-object-lambda:PutObject",
-            "s3:PutObject",
             "s3:ListBucket" 
         ],
         Effect = "Allow",
-        Resource = "${aws_s3_bucket.ingestion_data_bucket.arn}/*" 
+        Resource = [
+            "${aws_s3_bucket.ingestion_data_bucket.arn}/*" ,
+            "${aws_s3_bucket.ingestion_data_bucket.arn}" 
+        ]
       },
       {
         Action = [
             "s3:PutObject",
+            "s3:GetObject",
             "s3-object-lambda:GetObject",
             "s3-object-lambda:PutObject",
-            "s3:PutObject",
             "s3:ListBucket" 
         ],
         Effect = "Allow",
-        Resource = "${aws_s3_bucket.transformed_data_bucket.arn}/*",
+        Resource = [
+            "${aws_s3_bucket.transformed_data_bucket.arn}/*",
+            "${aws_s3_bucket.transformed_data_bucket.arn}",
+        ]
       },
     ]
   })
