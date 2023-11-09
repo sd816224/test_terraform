@@ -14,11 +14,11 @@ data "archive_file" "transformation_lambda_code_zip" {
   output_path = "${path.module}/../src/transformation_lambda/transformation_lambda.zip"
 }
 
-# data "archive_file" "loading_lambda_code_zip" {
-#   type        = "zip"
-#   source_file = "${path.module}/../src/loading_lambda/loading_lambda.py"
-#   output_path = "${path.module}/../src/loading_lambda/loading_lambda.zip"
-# }
+data "archive_file" "loading_lambda_code_zip" {
+  type        = "zip"
+  source_file = "${path.module}/../src/loading_lambda/loading_lambda.py"
+  output_path = "${path.module}/../src/loading_lambda/loading_lambda.zip"
+}
 
 resource "aws_s3_object" "ingestion_lambda_code_upload" {
   bucket = aws_s3_bucket.lambda_code_bucket.id
@@ -34,9 +34,9 @@ resource "aws_s3_object" "transformation_lambda_code_upload" {
   source = data.archive_file.transformation_lambda_code_zip.output_path
 }
 
-# resource "aws_s3_object" "loading_lambda_code_upload" {
-#   bucket = aws_s3_bucket.lambda_code_bucket.id
-#   key    = "loading_lambda/loading_lambda.zip"
-#   source = data.archive_file.loading_lambda_code_zip.output_path
-# }
+resource "aws_s3_object" "loading_lambda_code_upload" {
+  bucket = aws_s3_bucket.lambda_code_bucket.id
+  key    = "loading_lambda/loading_lambda.zip"
+  source = data.archive_file.loading_lambda_code_zip.output_path
+}
 
