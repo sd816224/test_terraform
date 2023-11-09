@@ -195,7 +195,9 @@ def get_parquet(bucket_name, file_name):
     try:
         response = client.get_object(Bucket=bucket_name, Key=file_name)
         restored_df = pd.read_parquet(BytesIO(response["Body"].read()))
-        formatted_df = restored_df.replace(to_replace=r"'", value='"', regex=True)
+        formatted_df = restored_df.replace(
+            to_replace=r"'", value='"', regex=True
+        )  # noqa E501
         values = formatted_df.values.tolist()
 
         list_of_tuples = [tuple(list) for list in values]
