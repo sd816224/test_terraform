@@ -29,6 +29,7 @@ def lambda_handler(event, context):
             time.sleep(20)
             for record in data:
                 list_columns = list(column_names)
+                list_columns.remove("sales_record_id")
                 string_columns = ", ".join(list_columns)
                 conn.run(
                     f"""
@@ -37,6 +38,8 @@ def lambda_handler(event, context):
                                     VALUES {record};
                                     """.replace(
                         '"', "''"
+                    ).replace(
+                        "None", "NULL"
                     )
                 )
                 conn.commit()
@@ -47,10 +50,11 @@ def lambda_handler(event, context):
                 conn.run(
                     f"""
                                     INSERT INTO {table_name}
-                                    {string_columns}
                                     VALUES {record};
                                     """.replace(
                         '"', "''"
+                    ).replace(
+                        "None", "NULL"
                     )
                 )
                 conn.commit()
@@ -235,7 +239,7 @@ def get_column_names(conn, table_name):
                             """
         )
 
-        result = str(tuple([name[0] for name in columns]))
+        result = tuple([name[0] for name in columns])
         if len(result) <= 2:
             logger.error("Incorrect table name has been provided.")
         elif len(result) > 2:
