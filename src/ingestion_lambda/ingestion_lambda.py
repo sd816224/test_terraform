@@ -12,6 +12,25 @@ logger.setLevel(logging.INFO)
 
 
 def lambda_handler(event, context):
+    """
+    AWS Lambda handler function for processing incoming events.
+
+    Parameters
+    ----------
+    event : dict
+        The event triggering the Lambda function.
+    context : LambdaContext
+        The runtime information of the Lambda function.
+
+    Returns
+    -------
+    None
+
+    Raises
+    ------
+    Exception
+        If there is an error during the processing of the event.
+    """
     invocation_time = dt.now()
     bucket_name = (
         "nc-de-project-ingested-data-bucket-20231102173127149000000003"  # noqa E501
@@ -35,38 +54,31 @@ def lambda_handler(event, context):
         logger.error(e)
 
 
-"""util functions"""
-
-
 def get_credentials(secret_name):
     """
-    Gets credentials from the AWS secrets manager.
+    Gets credentials from the AWS Secrets Manager.
 
     Parameters
     ----------
-    secret_name: str, required
-        The name of the database credentials secret the lambda is trying to
-        connect to.
-
-    options:
-        "totesys-production"
-        "totesys-warehouse"
+    secret_name : str
+        The name of the database credentials secret the lambda is trying to connect to.
+        Options:
+        - "totesys-production"
+        - "totesys-warehouse"
 
     Raises
     ------
     ClientError
-        If the secret name is not found in the secrets manager.
-        If there is an unexpected error connecting to the secrets manager.
+        If the secret name is not found in the Secrets Manager.
+        If there is an unexpected error connecting to the Secrets Manager.
     KeyError
         If the credentials object has a missing key.
 
     Returns
-    ------
-    dictionary
-        a json-like object that contains the database connection credentials
-        that can be accessed using the following keys:
-        host, port, user, password, database
-
+    -------
+    dict
+        A dictionary containing the database connection credentials.
+        Keys: host, port, user, password, database
     """
 
     try:
@@ -97,27 +109,22 @@ def get_connection(database_credentials):
     """
     Gets connections to the OLTP database - Totesys.
 
-
     Parameters
     ----------
-    database_credentials (from the get_credentials util),
-    which is a dictionary consisting of:
-        user
-        host
-        database
-        port
-        password
+    database_credentials : dict
+        Database connection credentials containing user, host, database, port, password.
 
     Raises
     ------
-    DatabaseError: Will return an error message showing what is missing.
-        i.e. if the password is wrong, the error message will state password
-        authentication has failed.
-    InterfaceError:
+    DatabaseError
+        If there is an error connecting to the database.
+    InterfaceError
+        If there is an interface error.
 
     Returns
     -------
-    A successful pg8000 connection object will be returned.
+    Connection
+        A successful pg8000 connection object.
     """
     try:
         user = database_credentials["user"]
@@ -143,19 +150,27 @@ def get_connection(database_credentials):
 
 
 def get_last_upload(bucket_name):
-    """retrieves the time the s3 bucket was modified
+    """
+    Retrieves the time the S3 bucket was last modified.
 
-    returns a datetime object that can be used in a psql query
-    if no last update file exists it returns a default datetime object
+    Returns a datetime object that can be used in a PostgreSQL query.
+    If no last update file exists, it returns a default datetime object.
 
-    Args:
-    -----
-        bucket name
+    Parameters
+    ----------
+    bucket_name : str
+        The name of the S3 bucket.
 
-    Raises:
+    Raises
+    ------
+    ClientError
+        If there is an issue accessing the S3 bucket.
+
+    Returns
     -------
-        clientError"""
-
+    datetime.datetime
+        A datetime object representing the last updated timestamp.
+    """
     client = boto3.client("s3")
 
     try:
@@ -178,24 +193,20 @@ def get_last_upload(bucket_name):
 
 def get_data(conn, last_upload):
     """
-    Gets data from the connected database from last_upload
-
+    Gets data from the connected database from last_upload.
 
     Parameters
     ----------
-    conn: database connection instance
-        type: pg8000 connect object
-    last_upload: the timestamp of the last fetched data file
-        type: datetime object
+    conn : Connection
+        Database connection instance (pg8000 connect object).
+    last_upload : datetime.datetime
+        The timestamp of the last fetched data file.
 
     Returns
     -------
-    JSON formatted updated content
+    dict
+        JSON-formatted updated content.
     """
-    # have checked that all created_at=last_updated in sales_order,
-    # need to check other tables that we can cross check if or statement work
-
-    # query to get all table names from database
     try:
         updated_content = {}
         table_names = conn.run(
@@ -269,22 +280,27 @@ def get_data(conn, last_upload):
 
 
 def write_file(bucket_name, json_data, timestamp=dt(2020, 1, 1, 0, 0, 0)):
-    """handles creation of new data file in s3 bucket.
+    """
+    Handles creation of a new data file in the S3 bucket.
 
-    Saves the json file with a time stamp to organise structure of s3 buckets.
+    Saves the JSON file with a timestamp to organize the structure of S3 buckets.
     Overwrites a last_updated file with the time the handler was invoked.
 
-    Args:
-    -----
-        s3 bucket name
-        json data from the get_data util (string)
-        datetime object timestamp from the lambda handler when it is invoked
+    Parameters
+    ----------
+    bucket_name : str
+        S3 bucket name.
+    json_data : dict
+        JSON data from the get_data utility (string).
+    timestamp : datetime.datetime, optional
+        Datetime object timestamp from the lambda handler when it is invoked.
+        Default is January 1, 2020, 00:00:00.
 
-    Raises:
-    -------
-        ClientError: Issue occurred regarding putting object into s3 bucket.
+    Raises
+    ------
+    ClientError
+        Issue occurred regarding putting an object into the S3 bucket.
     """
-
     client = boto3.client("s3")
     date = dt.now()
     year = date.year
