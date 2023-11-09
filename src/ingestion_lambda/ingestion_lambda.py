@@ -61,7 +61,8 @@ def get_credentials(secret_name):
     Parameters
     ----------
     secret_name : str
-        The name of the database credentials secret the lambda is trying to connect to.
+        The name of the database credentials
+        secret the lambda is trying to connect to.
         Options:
         - "totesys-production"
         - "totesys-warehouse"
@@ -112,7 +113,8 @@ def get_connection(database_credentials):
     Parameters
     ----------
     database_credentials : dict
-        Database connection credentials containing user, host, database, port, password.
+        Database connection credentials containing
+        user, host, database, port, password.
 
     Raises
     ------
@@ -283,8 +285,10 @@ def write_file(bucket_name, json_data, timestamp=dt(2020, 1, 1, 0, 0, 0)):
     """
     Handles creation of a new data file in the S3 bucket.
 
-    Saves the JSON file with a timestamp to organize the structure of S3 buckets.
-    Overwrites a last_updated file with the time the handler was invoked.
+    Saves the JSON file with a timestamp
+    to organize the structure of S3 buckets.
+    Overwrites a last_updated file with the
+    time the handler was invoked.
 
     Parameters
     ----------

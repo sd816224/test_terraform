@@ -102,8 +102,9 @@ def get_table_name(event):
 
 
 def create_parquet_buffer(formatted_data):
- """
-    Writes table-formatted data as Parquet to an in-memory buffer before uploading it to S3.
+    """
+    Writes table-formatted data as Parquet to
+    an in-memory buffer before uploading it to S3.
 
     Parameters
     ----------
