@@ -31,23 +31,28 @@ def lambda_handler(event, context):
                 columns_list = list(column_names)
                 columns_list.remove("sales_record_id")
                 column_names = tuple(columns_list)
+                string_columns = ", ".join(column_names)
+                string_record = ", ".join(record)
                 conn.run(
                     f"""
                                     INSERT INTO {table_name}
-                                    {column_names}
-                                    VALUES {record};
+                                    ({string_columns})
+                                    VALUES ({string_record});
                                     """
                 )
 
         else:
             for record in data:
+                string_columns = ", ".join(column_names)
+                string_record = ", ".join(record)
                 conn.run(
                     f"""
                                     INSERT INTO {table_name}
-                                    {column_names}
-                                    VALUES {record};
+                                    {string_columns}
+                                    VALUES ({string_record});
                                     """
                 )
+        conn.close()
 
         logger.info(f"data inserted into {table_name}")
 
