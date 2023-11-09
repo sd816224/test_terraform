@@ -20,7 +20,6 @@ resource "aws_cloudwatch_log_metric_filter" "warning_metrics_filter" {
     value     = "1"
   }
 }
-
 resource "aws_cloudwatch_log_metric_filter" "error_metric_filter" {
   name           = "ingestion-log-error-filter"
   pattern        = "ERROR"
@@ -32,6 +31,18 @@ resource "aws_cloudwatch_log_metric_filter" "error_metric_filter" {
     value     = "1"
   }
 }
+resource "aws_cloudwatch_log_metric_filter" "runtime_error" {
+  name           = "RuntimeError"
+  pattern        = "RuntimeError"
+  log_group_name = "/aws/lambda/${aws_lambda_function.ingestion_lambda.function_name}"
+
+  metric_transformation {
+    name      = "runtime-log-count"
+    namespace = "IngestionMetrics"
+    value     = "1"
+  }
+}
+
 
 resource "aws_cloudwatch_metric_alarm" "error_alert" {
   alarm_name          = "ingestion-error"
@@ -60,18 +71,6 @@ resource "aws_cloudwatch_metric_alarm" "warning_alert" {
 
 }
 
-resource "aws_cloudwatch_log_metric_filter" "runtime_error" {
-  name           = "RuntimeError"
-  pattern        = "RuntimeError"
-  log_group_name = "/aws/lambda/${aws_lambda_function.ingestion_lambda.function_name}"
-
-  metric_transformation {
-    name      = "runtime-log-count"
-    namespace = "IngestionMetrics"
-    value     = "1"
-  }
-}
-
 resource "aws_cloudwatch_metric_alarm" "runtime_alert" {
   alarm_name          = "RuntimeAlarm"
   comparison_operator = "GreaterThanOrEqualToThreshold"
@@ -85,6 +84,42 @@ resource "aws_cloudwatch_metric_alarm" "runtime_alert" {
   alarm_actions       = [aws_sns_topic.log_notification_topic.arn]
 
 }
+# metrix for transformation lamda cloud watch group
+# resource "aws_cloudwatch_log_metric_filter" "warning_metrics_filter" {
+#   name           = "transformation-log-warning-filter"
+#   pattern        = "WARNING"
+#   log_group_name = "/aws/lambda/${aws_lambda_function.transformation_lambda.function_name}"
+
+#   metric_transformation {
+#     name      = "warning-log-count"
+#     namespace = "IngestionMetrics"
+#     value     = "1"
+#   }
+# }
+# resource "aws_cloudwatch_log_metric_filter" "error_metric_filter" {
+#   name           = "transformation-log-error-filter"
+#   pattern        = "ERROR"
+#   log_group_name = "/aws/lambda/${aws_lambda_function.ingestion_lambda.function_name}"
+  
+#   metric_transformation {
+#     name      = "error-log-count"
+#     namespace = "IngestionMetrics"
+#     value     = "1"
+#   }
+# }
+# resource "aws_cloudwatch_log_metric_filter" "runtime_error" {
+#   name           = "RuntimeError"
+#   pattern        = "RuntimeError"
+#   log_group_name = "/aws/lambda/${aws_lambda_function.ingestion_lambda.function_name}"
+
+#   metric_transformation {
+#     name      = "runtime-log-count"
+#     namespace = "IngestionMetrics"
+#     value     = "1"
+#   }
+# }
+
+
 
 # #####Needs attention in regards to the namespace 
 
