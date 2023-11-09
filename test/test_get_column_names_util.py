@@ -59,7 +59,7 @@ def test_real_fact_sales_order_columns():
     credentials = get_credentials(secret_name)
     conn = get_connection(credentials)
     result = get_column_names(conn, 'fact_sales_order')
-    assert result == "('sales_record_id', 'sales_order_id', 'created_date', 'created_time', 'last_updated_date', 'last_updated_time', 'sales_staff_id', 'counterparty_id', 'units_sold', 'unit_price', currency_id', 'design_id', 'agreed_payment_date', 'agreed_delivery_date', 'agreed_delivery_location_id')"  # noqa E501
+    assert result == "('sales_record_id', 'sales_order_id', 'created_date', 'created_time', 'last_updated_date', 'last_updated_time', 'sales_staff_id', 'counterparty_id', 'units_sold', 'unit_price', 'currency_id', 'design_id', 'agreed_payment_date', 'agreed_delivery_date', 'agreed_delivery_location_id')"  # noqa E501
 
 
 def test_real_dim_currency_columns_incorrect_table_name(caplog):
