@@ -18,7 +18,7 @@ def lambda_handler(event, context):
         key = event["Records"][0]["s3"]["object"]["key"]
         table_name = key.split("/")[0]
 
-        credentials = get_credentials("totesys-warehouse-testing")
+        credentials = get_credentials("totesys-warehouse")
         conn = get_connection(credentials)
 
         data = get_parquet(bucket_name, key)
@@ -28,33 +28,35 @@ def lambda_handler(event, context):
         if table_name == "fact_sales_order":
             time.sleep(20)
             for record in data:
-                columns_list = list(column_names)
-                columns_list.remove("sales_record_id")
-                column_names = tuple(columns_list)
-                string_columns = ", ".join(column_names)
-                string_record = ", ".join(record)
+                list_columns = list(column_names)
+                string_columns = ", ".join(list_columns)
                 conn.run(
                     f"""
                                     INSERT INTO {table_name}
                                     ({string_columns})
-                                    VALUES ({string_record});
-                                    """
+                                    VALUES {record};
+                                    """.replace(
+                        '"', "''"
+                    )
                 )
-
+                conn.commit()
         else:
             for record in data:
-                string_columns = ", ".join(column_names)
-                string_record = ", ".join(record)
+                list_columns = list(column_names)
+                string_columns = ", ".join(list_columns)
                 conn.run(
                     f"""
                                     INSERT INTO {table_name}
                                     {string_columns}
-                                    VALUES ({string_record});
-                                    """
+                                    VALUES {record};
+                                    """.replace(
+                        '"', "''"
+                    )
                 )
+                conn.commit()
         conn.close()
 
-        logger.info(f"data inserted into {table_name}")
+        logger.info(f"data successfully inserted into {table_name}")
 
     except DatabaseError as db:
         logger.error(f"pg8000 - an error has occurred: {db.args[0]['M']}")
@@ -193,7 +195,8 @@ def get_parquet(bucket_name, file_name):
     try:
         response = client.get_object(Bucket=bucket_name, Key=file_name)
         restored_df = pd.read_parquet(BytesIO(response["Body"].read()))
-        values = restored_df.values.tolist()
+        formatted_df = restored_df.replace(to_replace=r"'", value='"', regex=True)
+        values = formatted_df.values.tolist()
 
         list_of_tuples = [tuple(list) for list in values]
 
