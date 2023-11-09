@@ -13,6 +13,25 @@ logger.setLevel(logging.INFO)
 
 
 def lambda_handler(event, context):
+    """
+    AWS Lambda handler function for processing incoming events.
+
+    Parameters
+    ----------
+    event : dict
+        The event triggering the Lambda function.
+    context : LambdaContext
+        The runtime information of the Lambda function.
+
+    Returns
+    -------
+    None
+
+    Raises
+    ------
+    Exception
+        If there is an error during the processing of the event.
+    """
     bucket_name = "nc-de-project-transformed-data-20231102173127140100000001"
 
     table_name = get_table_name(event)
@@ -65,15 +84,42 @@ def lambda_handler(event, context):
 
 
 def get_table_name(event):
-    """Extract table name that the incoming JSON data belongs to"""
+    """
+    Extracts the table name to which the incoming JSON data belongs.
+
+    Parameters
+    ----------
+    event : dict
+        The event containing information about the incoming data.
+
+    Returns
+    -------
+    str
+        The extracted table name.
+    """
     table_name = event["Records"][0]["s3"]["object"]["key"].split("/")[0]
     return table_name
 
 
 def create_parquet_buffer(formatted_data):
     """
-    Write table formatted data as parquet to an
-    in-memory buffer before uploading it to s3
+    Writes table-formatted data as Parquet to
+    an in-memory buffer before uploading it to S3.
+
+    Parameters
+    ----------
+    formatted_data : list or dict
+        The data formatted for the table.
+
+    Returns
+    -------
+    io.BytesIO
+        A BytesIO buffer containing the Parquet data.
+
+    Raises
+    ------
+    Exception
+        If there is an error creating the Parquet buffer.
     """
     try:
         df = pd.DataFrame(formatted_data)
@@ -138,7 +184,19 @@ def read_s3_json(event):
 
 
 def get_object_path(records):
-    """Extracts bucket and object references from Records field of event."""
+    """
+    Extracts bucket and object references from the Records field of an event.
+
+    Parameters
+    ----------
+    records : list
+        List of records containing S3 bucket and object information.
+
+    Returns
+    -------
+    tuple
+        A tuple containing the S3 bucket name and object key.
+    """
     return (
         records[0]["s3"]["bucket"]["name"],
         records[0]["s3"]["object"]["key"],
@@ -146,14 +204,54 @@ def get_object_path(records):
 
 
 def get_content_from_file(client, bucket, object_key):
-    """Reads text from specified file in S3."""
+    """
+    Reads text from the specified file in an S3 bucket.
+
+    Parameters
+    ----------
+    client
+        An S3 client object.
+    bucket : str
+        The name of the S3 bucket.
+    object_key : str
+        The key of the object to be read.
+
+    Returns
+    -------
+    str
+        The text content of the file.
+    """
     data = client.get_object(Bucket=bucket, Key=object_key)
     contents = data["Body"].read()
     return contents.decode("utf-8")
 
 
 def write_file_to_s3(bucket_name, table_name, parquet_buffer):
-    """Write parquet file to transfomed data bucket"""
+    """
+    Writes a Parquet file to the transformed data bucket in Amazon S3.
+
+    Parameters
+    ----------
+    bucket_name : str
+        The name of the S3 bucket.
+    table_name : str
+        The name of the table associated with the data.
+    parquet_buffer : io.BytesIO
+        A BytesIO buffer containing the Parquet data.
+
+    Returns
+    -------
+    None
+
+    Raises
+    ------
+    KeyError
+        If there is an issue accessing the response metadata.
+    ClientError
+        If there is an error with the S3 client.
+    Exception
+        For any other unexpected exceptions.
+    """
     client = boto3.client("s3")
     date = dt.now()
     year = date.year
