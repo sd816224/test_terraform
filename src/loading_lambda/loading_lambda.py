@@ -73,8 +73,9 @@ def lambda_handler(event, context):
                 string_columns = ", ".join(list_columns)
                 conn.run(
                     f"""
-                                    INSERT IGNORE INTO {table_name}
-                                    VALUES {record};
+                                    INSERT INTO {table_name}
+                                    VALUES {record}
+                                    ON CONFLICT (date_id) DO NOTHING;
                                     """.replace(
                         '"', "''"
                     ).replace(
