@@ -639,7 +639,7 @@ def format_dim_date(sales_order_table):
                     "day_of_week": date.weekday(),
                     "day_name": date.strftime("%A"),
                     "month_name": date.strftime("%B"),
-                    "quarter": 1 + (dt(2020, 9, 1).month - 1) // 3,
+                    "quarter": 1 + (date.month - 1) // 3,
                 }
             )
 

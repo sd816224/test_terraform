@@ -35,11 +35,11 @@ def get_column_names(conn, table_name):
                             """
         )
 
-        result = str(tuple([name[0] for name in columns]))
+        result = tuple([name[0] for name in columns])
         if len(result) <= 2:
-            logger.error('Incorrect table name has been provided.')
+            logger.error("Incorrect table name has been provided.")
         elif len(result) > 2:
-            logger.info(f'Column names returned are: {result}')
+            logger.info(f"Column names returned are: {result}")
             return result
     except ClientError as e:
         logger.error(f" {e.response['Error']['Message']}")
