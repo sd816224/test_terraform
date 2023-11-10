@@ -67,6 +67,21 @@ def lambda_handler(event, context):
                     )
                 )
                 conn.commit()
+        elif table_name == "dim_date":
+            for record in data:
+                list_columns = list(column_names)
+                string_columns = ", ".join(list_columns)
+                conn.run(
+                    f"""
+                                    INSERT IGNORE INTO {table_name}
+                                    VALUES {record};
+                                    """.replace(
+                        '"', "''"
+                    ).replace(
+                        "None", "NULL"
+                    )
+                )
+                conn.commit()
         else:
             for record in data:
                 list_columns = list(column_names)
