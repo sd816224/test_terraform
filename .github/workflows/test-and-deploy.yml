@@ -91,6 +91,7 @@ jobs:
           cat test.json
           else 
           terraform init
+          fi
 
       - name: Terraform apply
         working-directory: terraform
