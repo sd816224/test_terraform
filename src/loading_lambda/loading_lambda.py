@@ -50,7 +50,6 @@ def lambda_handler(event, context):
                 conn.run(
                     f"""
                                     INSERT INTO {table_name}
-
                                     VALUES {record};
                                     """.replace(
                         '"', "''"
