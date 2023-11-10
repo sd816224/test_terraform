@@ -40,6 +40,7 @@ def lambda_handler(event, context):
     try:
 
         print('hello')
+        print(event)
         # credentials = get_credentials(secret_name)
 
         # connection = get_connection(credentials)
