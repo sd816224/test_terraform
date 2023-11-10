@@ -96,8 +96,6 @@ jobs:
       - name: Terraform apply
         working-directory: terraform
         run: |
-          terraform apply --auto-approve \
-          -var bucketname='only-for-testing2-'
           cat test.json
 
       # - name: Terraform plan
