@@ -86,10 +86,10 @@ jobs:
           if aws s3api get-object \
           --bucket ${{secrets.BACKEND_BUCKET_NAME}} \
           --key production/terraform.tfstate \
-          test.json
+          instances.json
           then
-          cat test.json
-          echo $(jq '.resources' test.json)
+          terraform apply --auto-approve \
+          -var bucketname=$(jq '.resources[0].instances' instances.json)
           else 
           terraform init
           fi

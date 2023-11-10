@@ -15,4 +15,4 @@
 
 # fi
 
-echo $(jq '.resources' test.json)
+echo $(jq '.resources[0].instances' test.json)
