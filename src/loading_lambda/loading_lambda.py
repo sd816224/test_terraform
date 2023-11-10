@@ -13,6 +13,29 @@ logger.setLevel(logging.INFO)
 
 
 def lambda_handler(event, context):
+    """
+    Handles Lambda function execution.
+
+    Parameters
+    ----------
+    event : dict
+        AWS Lambda event object containing information about the triggering event.
+    context : object
+        AWS Lambda runtime information.
+
+    Raises
+    ------
+    DatabaseError
+        If a database error occurs.
+    InterfaceError
+        If an interface error occurs.
+    Exception
+        For any other unexpected exception.
+
+    Returns
+    -------
+    None
+    """
     try:
         bucket_name = event["Records"][0]["s3"]["bucket"]["name"]
         key = event["Records"][0]["s3"]["object"]["key"]
@@ -78,13 +101,9 @@ def get_credentials(secret_name):
 
     Parameters
     ----------
-    secret_name: str, required
-        The name of the database credentials secret the lambda is trying to
-        connect to.
-
-    options:
-        "totesys-production"
-        "totesys-warehouse"
+    secret_name : str
+        The name of the database credentials secret the lambda is trying to connect to.
+        Options: "totesys-production", "totesys-warehouse".
 
     Raises
     ------
@@ -95,14 +114,12 @@ def get_credentials(secret_name):
         If the credentials object has a missing key.
 
     Returns
-    ------
-    dictionary
-        a json-like object that contains the database connection credentials
+    -------
+    dict
+        A json-like object that contains the database connection credentials
         that can be accessed using the following keys:
         host, port, user, password, database
-
     """
-
     try:
         client = boto3.client("secretsmanager", region_name="eu-west-2")
         response = client.get_secret_value(SecretId=secret_name)
@@ -178,22 +195,19 @@ def get_connection(database_credentials):
 
 def get_parquet(bucket_name, file_name):
     """
-    This function extracts the parquet file
-    which invoked the lambda and returns
-    the values of the rows in a list of tuples.
+    Extracts the parquet file and returns the values of the rows in a list of tuples.
 
     Parameters
     ----------
-        bucket_name:
-            the name of the bucket containing the parquet files.
-        file_name:
-            the name of the file triggering the lambda.
+    bucket_name : str
+        The name of the bucket containing the parquet files.
+    file_name : str
+        The name of the file triggering the lambda.
 
     Returns
     -------
-        a list of tuples representing the values of each row.
-
-
+    list
+        A list of tuples representing the values of each row.
     """
     client = boto3.client("s3")
     try:
@@ -215,21 +229,20 @@ def get_parquet(bucket_name, file_name):
 
 def get_column_names(conn, table_name):
     """
-    Gets all columns name of given the table
+    Gets all columns name of the given table.
 
     Parameters
     ----------
-    conn: database connection instance
-        type: pg8000 connect object
-    table_name: table name
-        type: str
+    conn : Connection
+        Database connection instance.
+    table_name : str
+        Table name.
 
     Returns
     -------
-    Will return a string of column names:
-        "(column, column, column)"
+    str
+        A string of column names: "(column, column, column)".
     """
-
     try:
         columns = conn.run(
             f"""
