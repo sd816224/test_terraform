@@ -38,18 +38,20 @@ def lambda_handler(event, context):
     secret_name = "totesys-production"
 
     try:
-        credentials = get_credentials(secret_name)
 
-        connection = get_connection(credentials)
+        print('hello')
+        # credentials = get_credentials(secret_name)
 
-        last_upload = get_last_upload(bucket_name)
+        # connection = get_connection(credentials)
 
-        json_data = get_data(connection, last_upload)
+        # last_upload = get_last_upload(bucket_name)
 
-        if json_data != {}:
-            write_file(bucket_name, json_data, invocation_time)
-        else:
-            logger.info("No new updates to write to file")
+        # json_data = get_data(connection, last_upload)
+
+        # if json_data != {}:
+        #     write_file(bucket_name, json_data, invocation_time)
+        # else:
+        #     logger.info("No new updates to write to file")
     except Exception as e:
         logger.error(e)
 

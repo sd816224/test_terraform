@@ -6,11 +6,11 @@ terraform {
     }
   }
 
-  backend "s3" {
-    bucket = "nc-de-project-backend-bucket"
-    key    = "production/terraform.tfstate" 
-    region = "eu-west-2"
-  }
+  # backend "s3" {
+  #   bucket = "nc-de-project-backend-bucket"
+  #   key    = "production/terraform.tfstate" 
+  #   region = "eu-west-2"
+  # }
 }
 
 provider "aws" {
