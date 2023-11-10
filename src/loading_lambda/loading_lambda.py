@@ -19,7 +19,8 @@ def lambda_handler(event, context):
     Parameters
     ----------
     event : dict
-        AWS Lambda event object containing information about the triggering event.
+        AWS Lambda event object containing
+        information about the triggering event.
     context : object
         AWS Lambda runtime information.
 
@@ -102,7 +103,8 @@ def get_credentials(secret_name):
     Parameters
     ----------
     secret_name : str
-        The name of the database credentials secret the lambda is trying to connect to.
+        The name of the database credentials secret
+        the lambda is trying to connect to.
         Options: "totesys-production", "totesys-warehouse".
 
     Raises
@@ -195,7 +197,8 @@ def get_connection(database_credentials):
 
 def get_parquet(bucket_name, file_name):
     """
-    Extracts the parquet file and returns the values of the rows in a list of tuples.
+    Extracts the parquet file and returns the values
+    of the rows in a list of tuples.
 
     Parameters
     ----------
