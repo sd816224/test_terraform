@@ -8,6 +8,5 @@ resource "aws_lambda_function" "warehouse_loading_lambda" {
     s3_bucket        = aws_s3_bucket.lambda_code_bucket.id
     s3_key           = "loading_lambda/loading_lambda.zip"
     layers           = ["arn:aws:lambda:eu-west-2:336392948345:layer:AWSSDKPandas-Python311:2"]
-    source_code_hash = data.archive_file.loading_lambda_code_zip.output_base64sha256
-    # depends_on = [***layer***]
+    source_code_hash = resource.aws_s3_object.loading_lambda_code_upload.source_hash
 }

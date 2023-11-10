@@ -32,11 +32,13 @@ resource "aws_s3_object" "transformation_lambda_code_upload" {
   bucket = aws_s3_bucket.lambda_code_bucket.id
   key    = "transformation_lambda/transformation_lambda.zip"
   source = data.archive_file.transformation_lambda_code_zip.output_path
+  source_hash = filemd5(data.archive_file.transformation_lambda_code_zip.output_path)
 }
 
 resource "aws_s3_object" "loading_lambda_code_upload" {
   bucket = aws_s3_bucket.lambda_code_bucket.id
   key    = "loading_lambda/loading_lambda.zip"
   source = data.archive_file.loading_lambda_code_zip.output_path
+  source_hash = filemd5(data.archive_file.loading_lambda_code_zip.output_path)
 }
 
