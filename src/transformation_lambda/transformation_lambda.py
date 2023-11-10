@@ -636,7 +636,7 @@ def format_dim_date(sales_order_table):
                     "year": date.year,
                     "month": date.month,
                     "day": date.day,
-                    "day_of_week": date.weekday(),
+                    "day_of_week": date.weekday() + 1,
                     "day_name": date.strftime("%A"),
                     "month_name": date.strftime("%B"),
                     "quarter": 1 + (date.month - 1) // 3,

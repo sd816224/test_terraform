@@ -68,11 +68,11 @@ test_table = {
 def test_correct_output():
     result = format_dim_date(test_table)
     assert len(result) == 5
-    assert ["2023-11-01", 2023, 11, 1, 2, "Wednesday", "November", 4] in result
-    assert ["2023-11-02", 2023, 11, 2, 3, "Thursday", "November", 4] in result
-    assert ["2023-11-05", 2023, 11, 5, 6, "Sunday", "November", 4] in result
-    assert ["2023-11-03", 2023, 11, 3, 4, "Friday", "November", 4] in result
-    assert ["2023-10-30", 2023, 10, 30, 0, "Monday", "October", 4] in result
+    assert ["2023-11-01", 2023, 11, 1, 3, "Wednesday", "November", 4] in result
+    assert ["2023-11-02", 2023, 11, 2, 4, "Thursday", "November", 4] in result
+    assert ["2023-11-05", 2023, 11, 5, 7, "Sunday", "November", 4] in result
+    assert ["2023-11-03", 2023, 11, 3, 5, "Friday", "November", 4] in result
+    assert ["2023-10-30", 2023, 10, 30, 1, "Monday", "October", 4] in result
 
 
 def test_KeyError_happend_when_wrong_table_name(caplog):
