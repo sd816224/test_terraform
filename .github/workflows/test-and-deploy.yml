@@ -82,7 +82,12 @@ jobs:
 
       - name: Terraform init
         working-directory: terraform
-        run: echo ${{secrets.BACKEND_BUCKET_NAME}}
+        run: |
+          aws s3api get-object \
+          --bucket ${{secrets.BACKEND_BUCKET_NAME}} \
+          --key production/terraform.tfstate \
+          test.json
+          cat test.json
 
       # - name: Terraform plan
       #   working-directory: terraform
