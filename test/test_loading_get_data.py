@@ -26,7 +26,7 @@ class TestGetParquet:
             CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
         )  # noqa E501
 
-        with open("mock_parquet/data-144511.parquet", mode="rb") as pq:
+        with open("test/mock_parquet/data-144511.parquet", mode="rb") as pq:
             s3.put_object(
                 Body=pq.read(), Bucket="test_bucket", Key="data-144511.parquet"
             )
@@ -202,9 +202,13 @@ class TestGetParquet:
                 CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
             )  # noqa E501
 
-            with open("mock_parquet/data-144511.parquet", mode="rb") as pq:
+            with open(
+                "test/mock_parquet/data-144511.parquet", mode="rb"
+            ) as pq:  # noqa E501
                 s3.put_object(
-                    Body=pq.read(), Bucket="test_bucket", Key="data-144511.parquet"  # noqa E501
+                    Body=pq.read(),
+                    Bucket="test_bucket",
+                    Key="data-144511.parquet",  # noqa E501
                 )
             get_parquet("MyBucket", "data-144511.parquet")
             assert "The specified bucket does not exist" in caplog.text
@@ -219,7 +223,9 @@ class TestGetParquet:
                 },  # noqa E501
             )
 
-            with open("mock_parquet/data-144511.parquet", mode="rb") as pq:
+            with open(
+                "test/mock_parquet/data-144511.parquet", mode="rb"
+            ) as pq:  # noqa E501
                 s3.put_object(
                     Body=pq.read(),
                     Bucket="test_bucket",

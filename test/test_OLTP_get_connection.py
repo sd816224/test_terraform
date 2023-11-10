@@ -13,7 +13,7 @@ logger.setLevel(logging.INFO)
 @pytest.fixture(scope="module")
 def pg_container():
     test_dir = os.path.dirname(os.path.abspath(__file__))
-    compose_path = os.path.join(test_dir, "..", "docker-compose.yaml")
+    compose_path = os.path.join(test_dir, "docker-compose-dw.yaml")
     subprocess.run(
         ["docker", "compose", "-f", compose_path, "up", "-d"], check=False
     )  # noqa: E501
@@ -24,7 +24,7 @@ def pg_container():
                 [
                     "docker",
                     "exec",
-                    "postgres",
+                    "postgres-dw",
                     "pg_isready",
                     "-h",
                     "localhost",
