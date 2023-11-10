@@ -92,7 +92,8 @@ jobs:
             if [jq -e . >/dev/null 2>&1 <<<"$xxx"] ; then
                echo "bucket created already, instances file is ready"
             else
-               echo 'init done but bucket not created:'
+               echo 'been destroy, has to init and create bucket '
+               terraform init
                terraform apply -target=module.nc_project_init_bucket_module -auto-approve 
             fi
           else 
