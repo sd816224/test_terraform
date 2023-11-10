@@ -80,19 +80,35 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
 
-      - name: Terraform read tfstate or init
+      - name: make sure bucket is created
         working-directory: terraform
         run: |
           if aws s3api get-object \
           --bucket ${{secrets.BACKEND_BUCKET_NAME}} \
           --key production/terraform.tfstate \
-          instances.json
-          then
-          terraform apply --auto-approve \
-          -var bucketname=$(jq '.resources[0].instances' instances.json)
+           instances.json
+          then 
+            xxx=$(jq '.resources[0].instances' instances.json)
+            if [jq -e . >/dev/null 2>&1 <<<"$xxx"] ; then
+               echo "bucket created already, instances file is ready"
+            else
+               echo 'init done but bucket not created:'
+               terraform apply -target=module.nc_project_init_bucket_module -auto-approve 
+            fi
           else 
+          echo 'start init and create bucket'
           terraform init
+          terraform apply -target=module.nc_project_init_bucket_module -auto-approve 
           fi
+
+      - name: read again tfstate incase last step create bucket freshly
+        working-directory: terraform
+        run: |
+          aws s3api get-object \
+          --bucket nc-project-backend20231107140228968000000001 \
+          --key production/terraform.tfstate \
+          instances.json
+          cat ./instances.json
 
       # - name: Terraform apply
       #   working-directory: terraform
