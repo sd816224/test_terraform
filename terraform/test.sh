@@ -60,3 +60,6 @@
 
 
 # cat ./test.json
+
+terraform apply -auto-approve \
+-var ingestiontrigger='data-bucket-iii20231110162329077800000001'
