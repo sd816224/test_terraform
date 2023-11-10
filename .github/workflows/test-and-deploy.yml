@@ -89,14 +89,15 @@ jobs:
           test.json
           then
           cat test.json
+          echo $(jq '.resources' test.json)
           else 
           terraform init
           fi
 
-      - name: Terraform apply
-        working-directory: terraform
-        run: |
-          cat test.json
+      # - name: Terraform apply
+      #   working-directory: terraform
+      #   run: |
+      #     cat test.json
 
       # - name: Terraform plan
       #   working-directory: terraform

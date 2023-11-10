@@ -4,14 +4,15 @@
 # abc='hello'
 # echo ${abc}
 
-if aws s3api get-object \
---bucket nc-project-backend20231107140228968000000001 \
---key production/terraform.tfstate \
- test.json
+# if aws s3api get-object \
+# --bucket nc-project-backend20231107140228968000000001 \
+# --key production/terraform.tfstate \
+#  test.json
 
-then
-echo 'hello'
-else
+# then
+# echo $(jq '.check_results' test.json)
+# else
 
-fi
+# fi
 
+echo $(jq '.resources' test.json)
