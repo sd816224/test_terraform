@@ -1,7 +1,7 @@
 
 variable  "tfstate_trigger"{
     type=string
-    default = "bucket-iii"
+    # default = "bucket-iii"
 }
 
 resource "aws_cloudwatch_event_rule" "event_bridge_invoke_ingestion_lambda_rule" {
