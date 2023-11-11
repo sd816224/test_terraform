@@ -108,7 +108,7 @@ jobs:
           -var bucketname='only-for-testing2-' 
           fi
 
-      - name: read again tfstate incase last step create bucket freshly
+      - name: get bucket name passed to event target
         working-directory: terraform
         # run: |
         #   aws s3api get-object \
