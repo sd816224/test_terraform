@@ -1,7 +1,7 @@
 
 variable  "tfstate_trigger"{
     type=string
-    # default = "bucket-iii"
+    default = "default message, its wrong if shown"
 }
 
 resource "aws_cloudwatch_event_rule" "event_bridge_invoke_ingestion_lambda_rule" {
