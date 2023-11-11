@@ -61,5 +61,7 @@
 
 # cat ./test.json
 
-terraform apply -auto-approve \
--var ingestiontrigger='data-bucket-iii20231110162329077800000001'
+# terraform apply -auto-approve \
+# -var ingestiontrigger='data-bucket-iii20231110162329077800000001'
+
+terraform apply -target=module.nc_project_init_bucket_module --auto-approve 

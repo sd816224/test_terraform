@@ -73,8 +73,8 @@ data "aws_iam_policy_document" "ingestion_lambda_s3_ingestion_bucket_document" {
           "s3:ListBucket" #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         ]
     resources = [
-      "${module.nc_project_init_bucket_module.key_arn}/*",
-      "${module.nc_project_init_bucket_module.key_arn}",
+      "${module.nc_project_init_bucket_module.s3_bucket_arn}/*",
+      "${module.nc_project_init_bucket_module.s3_bucket_arn}",
     ]
   }
 }
@@ -95,10 +95,12 @@ resource "aws_iam_policy" "lambda_access_secrets_manager_policy" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "ingestion_lambda_rds_role_attachment" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonRDSReadOnlyAccess"
-  role       = aws_iam_role.role_for_ingestion_lambda.id
-}
+
+
+# resource "aws_iam_role_policy_attachment" "ingestion_lambda_rds_role_attachment" {
+#   policy_arn = "arn:aws:iam::aws:policy/AmazonRDSReadOnlyAccess"
+#   role       = aws_iam_role.role_for_ingestion_lambda.id
+# }
 
 
 resource "aws_iam_role_policy_attachment" "ingestion_lambda_cw_role_attachment" {
@@ -120,3 +122,6 @@ resource "aws_iam_role_policy_attachment" "ingestion_lambda_secrets_manager_atta
   policy_arn = aws_iam_policy.lambda_access_secrets_manager_policy.arn
   role       = aws_iam_role.role_for_ingestion_lambda.name
 }
+
+
+
