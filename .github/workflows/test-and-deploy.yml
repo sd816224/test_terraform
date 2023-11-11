@@ -116,7 +116,9 @@ jobs:
         #   --key production/terraform.tfstate \
         #   instances.json
         #   cat ./instances.json
-        run: terraform output
+        run: |
+          terraform apply \
+          -var tfstate_trigger=$(terraform output data_bucket_arn )
 
       # - name: Terraform apply
       #   working-directory: terraform
