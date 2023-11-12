@@ -120,7 +120,7 @@ jobs:
         #   cat ./instances.json
         run: |
           terraform apply \
-          -var tfstate_trigger=$(terraform output data_bucket_name)
+          -var bucket_name=$(terraform output data_bucket_name)
           -auto-approve
       # - name: Terraform apply
       #   working-directory: terraform

@@ -64,6 +64,11 @@
 # terraform apply -auto-approve \
 # -var ingestiontrigger='data-bucket-iii20231110162329077800000001'
 
-terraform apply -var tfstate_trigger=$(terraform output data_bucket_name )
+# terraform apply -var tfstate_trigger=$(terraform output data_bucket_name )
 
 # terraform output data_bucket_name
+
+
+# terraform apply -target=module.nc_project_init_bucket_module -auto-approve -var bucketname='only-for-testing2-' 
+
+terraform apply  -var bucket_name=$(terraform output data_bucket_name) -auto-approve
